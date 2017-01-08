@@ -23,10 +23,15 @@ if [ $? -ne 0 ];then
   echo "source $FILEPATH " >> $HOME/.bashrc
 fi
 
+######################################################
+# you can write git-prompt and git-completion options
+
 GIT_PS1_SHOWDIRTYSTATE=true
 GIT_PS1_SHOWSTASHSTATE=true
 GIT_PS1_SHOWUNTRACKEDFILES=true
 GIT_PS1_SHOWUPSTREAM=AUTO
+######################################################
+
 
 ISROOT="#"
 id | grep 'uid=0(root)' 1>/dev/null 2>/dev/null
@@ -61,10 +66,11 @@ function exitstatus {
     else
        # PS1="${PROMPT} ${BOLD}${RED}:(${OFF}$(__git_ps1)]\$ "
        # PS1="${PROMPT}${PROXYVAR}${BOLD}${RED}(#\\\`_>´) <($?) ${OFF}$(__git_ps1) ${ISROOT} "
-       PS1="${PROMPT}${PROXYVAR}${BOLD}${RED}:( ($?) ${OFF}$(__git_ps1) ${ISROOT} "
+       PS1="${PROMPT}${PROXYVAR}${BOLD}${RED}:(${OFF}$(__git_ps1) ${ISROOT} "
     fi
 
     PS2="${BOLD}>${OFF} "
 }
 
 PROMPT_COMMAND=exitstatus
+
