@@ -1,4 +1,27 @@
 #!/bin/bash
+# created by devhirano :)
+
+# what is this
+#  check exit status with kao-moji
+#  check enabled/disabled proxy
+#  git fetch automatically
+#  cut hostname if too long it
+
+# how to use
+#  $ source dh.sh
+#  restart terminal
+#  done!
+
+# many thanks
+#  git-completion and git-prompt contributors
+
+# strict
+#  this can use for only bash
+
+# configuration for dhprompt
+__FULLHOST="no"
+__FETCH_CHECK="true"
+
 
 #SCRIPT_DIR=$(cd $(dirname ${BASH_SOURCE:-$0}); pwd)
 SCRIPT_DIR="$HOME/.dhprompt"
@@ -40,7 +63,6 @@ then
   ISROOT="$"
 fi
 
-__FULLHOST="no"
 __SHORTHOSTNAME=`hostname`
 if [ "$__FULLHOST" == "no" ];then
   __HOSTLEN=`hostname | wc -c`
@@ -63,7 +85,6 @@ function exitstatus {
     # PROMPT="[\u@\h ${BLUE}\W${OFF}"
     PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
 
-    __FETCH_CHECK="true"
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
     ls .git 1>/dev/null 2>/dev/null
     if [ $? == 0 -a "$__FETCH_CHECK" == "true" -a $__GIT_REMOTE_AMOUNT -ge 1 ];then
