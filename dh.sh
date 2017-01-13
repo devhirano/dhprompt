@@ -63,6 +63,26 @@ function exitstatus {
     # PROMPT="[\u@\h ${BLUE}\W${OFF}"
     PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
 
+    __FETCH_CHECK="true"
+    __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
+    ls .git 1>/dev/null 2>/dev/null
+    if [ $? == 0 -a "$__FETCH_CHECK" == "true" -a $__GIT_REMOTE_AMOUNT -ge 1 ];then
+        # this is what I need:
+        last_fetch_date=`stat .git/FETCH_HEAD 2>/dev/null |grep Modify | awk '{print $2" "$3}' 2>/dev/null`
+        
+        # do the math to see how long ago
+        timestamp=`date -d "$last_fetch_date" +%s 2>/dev/null`
+        now=`date +%s`
+        diff=`echo $now - $timestamp | bc -l 2>/dev/null`
+        
+        # two days
+        if [ `echo $diff' >= 2*24*60' | bc -l` == "1" ]; then
+            echo "!dhprompt: git fetched date is too long, force fetch remote"
+            git fetch --tags
+            echo "!dhprompt: done"
+        fi
+    fi
+
     PROXYVAR=" "
     if [ -n "$HTTP_PROXY" -o -n "$HTTPS_PROXY" -o -n "$http_proxy" -o -n "$https_proxy" ]; then
       PROXYVAR=" (P) ";
