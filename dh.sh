@@ -40,6 +40,15 @@ then
   ISROOT="$"
 fi
 
+__FULLHOST="no"
+__SHORTHOSTNAME=`hostname`
+if [ "$__FULLHOST" == "no" ];then
+  __HOSTLEN=`hostname | wc -c`
+  if [ $__HOSTLEN -ge 12 ];then
+    __SHORTHOSTNAME=`hostname | cut -c -12`..
+  fi
+fi
+
 function exitstatus {
     EXITSTATUS="$?"
     BOLD="\[\033[1m\]"
@@ -52,7 +61,7 @@ function exitstatus {
     OFF="\[\033[m\]"
 
     # PROMPT="[\u@\h ${BLUE}\W${OFF}"
-    PROMPT="[\u@\h ${YELLOW}\W${OFF}"
+    PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
 
     PROXYVAR=" "
     if [ -n "$HTTP_PROXY" -o -n "$HTTPS_PROXY" -o -n "$http_proxy" -o -n "$https_proxy" ]; then
