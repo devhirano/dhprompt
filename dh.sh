@@ -31,12 +31,18 @@
 
 # configuration for dhprompt
 __SHORTHOST="true"
+__SHORTHOST_CHAR="8"
+__SHORTUSER="true"
+__SHORTUSER_CHAR="4"
 __SIMPLE="false"
 __FETCH_CHECK="true"
 __GOOD_KAOMOJI_SHOW="false"
 __GOOD_KAOMOJI=(":)")
 __BAD_KAOMOJI_RANDOM="true"
 __BAD_KAOMOJI=(":(" "(#\\\`_>´)" "(´-ω-\\\`)" "(;ω;)" "(ﾉД\\\`)" "┐(´д\\\`)┌") 
+__DATE="true"
+__DATE_FMT="%H:%M"
+__DATE_FMT="%H:%M:%S"
 
 
 
@@ -89,9 +95,19 @@ fi
 
 __SHORTHOSTNAME=`hostname`
 if [ "$__SHORTHOST" == "true" ];then
-  __HOSTLEN=`hostname | wc -c`
-  if [ $__HOSTLEN -ge 12 ];then
-    __SHORTHOSTNAME=`hostname | cut -c -12`..
+  __HOSTLEN=`hostname | wc -c | xargs -I{} expr {} - 1`
+  # __HOSTLEN=`hostname | wc -c`
+  if [ $__HOSTLEN -gt ${__SHORTHOST_CHAR} ];then
+    __SHORTHOSTNAME=`hostname | cut -b -${__SHORTHOST_CHAR}`..
+  fi
+fi
+
+__SHORTUSERNAME=`whoami`
+if [ "$__SHORTUSER" == "true" ];then
+  __USERLEN=`whoami | wc -c | xargs -I{} expr {} - 1`
+  # __USERLEN=`whoami | wc -c`
+  if [ $__USERLEN -gt ${__SHORTUSER_CHAR} ];then
+    __SHORTUSERNAME=`whoami | cut -b -${__SHORTUSER_CHAR}`..
   fi
 fi
 
@@ -114,7 +130,8 @@ function exitstatus {
     OFF="\[\033[m\]"
 
     # PROMPT="[\u@\h ${BLUE}\W${OFF}"
-    PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
+    # PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
+    PROMPT="[${__SHORTUSERNAME}@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
     ls .git 1>/dev/null 2>/dev/null
@@ -140,14 +157,20 @@ function exitstatus {
       PROXYVAR=" (P)";
     fi
 
+    if [ "$__DATE" == "true" ];then
+        __NOW=`date +"${__DATE_FMT}"`" "
+    else
+        __NOW=""
+    fi
+
     if [ "${EXITSTATUS}" -eq 0 ]
     then
       # PS1="${PROMPT} ${BOLD}${GREEN}:)${OFF}$(__git_ps1)]\$ "
     
       if [ "$__GOOD_KAOMOJI_SHOW" == "true" ];then
-        PS1="${PROMPT}${PROXYVAR} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} "
+        PS1="${__NOW}${PROMPT}${PROXYVAR} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} "
       else
-        PS1="${PROMPT}${PROXYVAR}${OFF}$(__git_ps1) ${__ISROOT} "
+        PS1="${__NOW}${PROMPT}${PROXYVAR}${OFF}$(__git_ps1) ${__ISROOT} "
       fi
     else
       if [ "$__BAD_KAOMOJI_RANDOM" == "true" ];then
@@ -158,7 +181,7 @@ function exitstatus {
       fi
 
       # PS1="${PROMPT}${PROXYVAR}${BOLD}${RED}:(${OFF}$(__git_ps1) ${__ISROOT} "
-      PS1="${PROMPT}${PROXYVAR}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} "
+      PS1="${__NOW}${PROMPT}${PROXYVAR}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} "
     fi
 
     PS2="${BOLD}>${OFF} "
