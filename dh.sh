@@ -6,11 +6,22 @@
 #  check enabled/disabled proxy
 #  git fetch automatically
 #  cut hostname if too long it
+#  simple mode, this is useful for copy/paste
 
 # how to use
 #  $ source dh.sh
 #  restart terminal
 #  done!
+
+#   change mode
+#    $ export __SIMPLE="true"
+#    
+#      [devhirano@devhirano-HP..] ~ $ export __SIMPLE=true
+#      ~ $
+#   
+#    $ export __SIMPLE="false"
+#      ~ $ export __SIMPLE=false
+#      [devhirano@devhirano-HP..] ~ $
 
 # many thanks
 #  git-completion and git-prompt contributors
@@ -19,12 +30,14 @@
 #  this can use for only bash
 
 # configuration for dhprompt
-__FULLHOST="no"
+__SHORTHOST="true"
+__SIMPLE="false"
 __FETCH_CHECK="true"
 __GOOD_KAOMOJI_SHOW="false"
 __GOOD_KAOMOJI=(":)")
 __BAD_KAOMOJI_RANDOM="true"
 __BAD_KAOMOJI=(":(" "(#\\\`_>´)" "(´-ω-\\\`)" "(;ω;)" "(ﾉД\\\`)" "┐(´д\\\`)┌") 
+
 
 
 
@@ -75,7 +88,7 @@ then
 fi
 
 __SHORTHOSTNAME=`hostname`
-if [ "$__FULLHOST" == "no" ];then
+if [ "$__SHORTHOST" == "true" ];then
   __HOSTLEN=`hostname | wc -c`
   if [ $__HOSTLEN -ge 12 ];then
     __SHORTHOSTNAME=`hostname | cut -c -12`..
@@ -83,6 +96,13 @@ if [ "$__FULLHOST" == "no" ];then
 fi
 
 function exitstatus {
+
+    if [ "$__SIMPLE" == "true" ];then
+      PS1="\W ${__ISROOT} "
+      PS2="${BOLD}>${OFF} "
+      return 
+    fi
+
     EXITSTATUS="$?"
     BOLD="\[\033[1m\]"
     RED="\[\033[1;31m\]"
@@ -115,9 +135,9 @@ function exitstatus {
         fi
     fi
 
-    PROXYVAR=" "
+    PROXYVAR=""
     if [ -n "$HTTP_PROXY" -o -n "$HTTPS_PROXY" -o -n "$http_proxy" -o -n "$https_proxy" ]; then
-      PROXYVAR=" (P) ";
+      PROXYVAR=" (P)";
     fi
 
     if [ "${EXITSTATUS}" -eq 0 ]
@@ -125,9 +145,9 @@ function exitstatus {
       # PS1="${PROMPT} ${BOLD}${GREEN}:)${OFF}$(__git_ps1)]\$ "
     
       if [ "$__GOOD_KAOMOJI_SHOW" == "true" ];then
-        PS1="${PROMPT}${PROXYVAR}${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} "
+        PS1="${PROMPT}${PROXYVAR} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} "
       else
-        PS1="${PROMPT}${PROXYVAR}${BOLD}${GREEN}${OFF}$(__git_ps1)${__ISROOT} "
+        PS1="${PROMPT}${PROXYVAR}${OFF}$(__git_ps1) ${__ISROOT} "
       fi
     else
       if [ "$__BAD_KAOMOJI_RANDOM" == "true" ];then
@@ -138,11 +158,10 @@ function exitstatus {
       fi
 
       # PS1="${PROMPT}${PROXYVAR}${BOLD}${RED}:(${OFF}$(__git_ps1) ${__ISROOT} "
-      PS1="${PROMPT}${PROXYVAR}${BOLD}${RED}${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} "
+      PS1="${PROMPT}${PROXYVAR}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} "
     fi
 
     PS2="${BOLD}>${OFF} "
 }
 
 PROMPT_COMMAND=exitstatus
-
