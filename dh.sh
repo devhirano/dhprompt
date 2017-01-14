@@ -148,8 +148,8 @@ function exitstatus {
         if [ `echo $diff' >= 2*24*60' | bc -l` == "1" ]; then
             echo "!dhprompt: git fetched date is too long, force fetch remote"
             git fetch --tags
-            echo "!dhprompt: git diff origin/master"
-            git diff origin/master
+            echo "!dhprompt: git diff origin/master --stat"
+            git diff origin/master --stat
         fi
     fi
 
