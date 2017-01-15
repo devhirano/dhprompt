@@ -31,13 +31,14 @@
 
 # configuration for dhprompt
 __SHORTHOST="true"
+__SHORTHOST_CHARS="12"
 __SIMPLE="false"
 __FETCH_CHECK="true"
 __GOOD_KAOMOJI_SHOW="false"
 __GOOD_KAOMOJI=(":)")
 __BAD_KAOMOJI_RANDOM="true"
 __BAD_KAOMOJI=(":(" "(#\\\`_>´)" "(´-ω-\\\`)" "(;ω;)" "(ﾉД\\\`)" "┐(´д\\\`)┌") 
-
+__CHECK_NW="true"
 
 
 
@@ -90,12 +91,14 @@ fi
 __SHORTHOSTNAME=`hostname`
 if [ "$__SHORTHOST" == "true" ];then
   __HOSTLEN=`hostname | wc -c`
-  if [ $__HOSTLEN -ge 12 ];then
-    __SHORTHOSTNAME=`hostname | cut -c -12`..
+  if [ $__HOSTLEN -ge $__SHORTHOST_CHARS ];then
+    __SHORTHOSTNAME=`hostname | cut -c -${__SHORTHOST_CHARS}`..
   fi
 fi
 
 function exitstatus {
+
+    EXITSTATUS="$?"
 
     if [ "$__SIMPLE" == "true" ];then
       PS1="\W ${__ISROOT} "
@@ -103,7 +106,6 @@ function exitstatus {
       return 
     fi
 
-    EXITSTATUS="$?"
     BOLD="\[\033[1m\]"
     RED="\[\033[1;31m\]"
     GREEN="\[\e[32;1m\]"
@@ -114,7 +116,8 @@ function exitstatus {
     OFF="\[\033[m\]"
 
     # PROMPT="[\u@\h ${BLUE}\W${OFF}"
-    PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
+    CHECKPUBLICROUTE_DEV=`ip route get 8.8.8.8 2>/dev/null |grep dev|head -n 1|awk '{print $5}'`
+    PROMPT="[\u@${__SHORTHOSTNAME}(${CHECKPUBLICROUTE_DEV})] ${YELLOW}\W${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
     ls .git 1>/dev/null 2>/dev/null
