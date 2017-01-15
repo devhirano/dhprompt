@@ -16,12 +16,12 @@
 #   change mode
 #    $ export __SIMPLE="true"
 #    
-#      [devhirano@devhirano-HP..] ~ $ export __SIMPLE=true
+#      [devhirano@devhirano-HP~] ~ $ export __SIMPLE=true
 #      ~ $
 #   
 #    $ export __SIMPLE="false"
 #      ~ $ export __SIMPLE=false
-#      [devhirano@devhirano-HP..] ~ $
+#      [devhirano@devhirano-HP~] ~ $
 
 # many thanks
 #  git-completion and git-prompt contributors
@@ -31,7 +31,7 @@
 
 # configuration for dhprompt
 __SHORTHOST="true"
-__SHORTHOST_CHAR="8"
+__SHORTHOST_CHAR="6"
 __SHORTUSER="true"
 __SHORTUSER_CHAR="4"
 __SIMPLE="false"
@@ -98,7 +98,7 @@ if [ "$__SHORTHOST" == "true" ];then
   __HOSTLEN=`hostname | wc -c | xargs -I{} expr {} - 1`
   # __HOSTLEN=`hostname | wc -c`
   if [ $__HOSTLEN -gt ${__SHORTHOST_CHAR} ];then
-    __SHORTHOSTNAME=`hostname | cut -b -${__SHORTHOST_CHAR}`..
+    __SHORTHOSTNAME=`hostname | cut -b -${__SHORTHOST_CHAR}`~
   fi
 fi
 
@@ -107,7 +107,7 @@ if [ "$__SHORTUSER" == "true" ];then
   __USERLEN=`whoami | wc -c | xargs -I{} expr {} - 1`
   # __USERLEN=`whoami | wc -c`
   if [ $__USERLEN -gt ${__SHORTUSER_CHAR} ];then
-    __SHORTUSERNAME=`whoami | cut -b -${__SHORTUSER_CHAR}`..
+    __SHORTUSERNAME=`whoami | cut -b -${__SHORTUSER_CHAR}`~
   fi
 fi
 
