@@ -132,6 +132,7 @@ function exitstatus {
 
     # PROMPT="[\u@\h ${BLUE}\W${OFF}"
     # PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
+    CHECKPUBLICROUTE_DEV=`ip route get 8.8.8.8 2>/dev/null |grep dev|head -n 1|awk '{print $5}'`
     PROMPT="[${__SHORTUSERNAME}@${__SHORTHOSTNAME}(${CHECKPUBLICROUTE_DEV})] ${YELLOW}\W${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
