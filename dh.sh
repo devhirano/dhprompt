@@ -43,7 +43,7 @@ __BAD_KAOMOJI=(":(" "(#\\\`_>´)" "(´-ω-\\\`)" "(;ω;)" "(ﾉД\\\`)" "┐(´�
 __CHECK_NW="true"
 __DATE="true"
 __DATE_FMT="%H:%M"
-__DATE_FMT="%H:%M:%S"
+# __DATE_FMT="%H:%M:%S"
 
 
 
