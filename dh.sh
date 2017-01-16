@@ -41,6 +41,8 @@ __GOOD_KAOMOJI=(":)")
 __BAD_KAOMOJI_RANDOM="true"
 __BAD_KAOMOJI=(":(" "(#\\\`_>´)" "(´-ω-\\\`)" "(;ω;)" "(ﾉД\\\`)" "┐(´д\\\`)┌") 
 __CHECK_NW="true"
+__SHORTNW="true"
+__SHORTNW_CHAR="4"
 __DATE="true"
 __DATE_FMT="%H:%M"
 # __DATE_FMT="%H:%M:%S"
@@ -132,8 +134,15 @@ function exitstatus {
 
     # PROMPT="[\u@\h ${BLUE}\W${OFF}"
     # PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
-    CHECKPUBLICROUTE_DEV=`ip route get 8.8.8.8 2>/dev/null | head -n 1 | sed -e "s/.*dev //" | sed -e "s/ *src .*//"`
-    PROMPT="[${__SHORTUSERNAME}@${__SHORTHOSTNAME}(${CHECKPUBLICROUTE_DEV})] ${YELLOW}\W${OFF}"
+    __SHORTNWNAME=`ip route get 8.8.8.8 2>/dev/null | head -n 1 | sed -e "s/.*dev //" | sed -e "s/ *src .*//" `
+    if [ "$__SHORTNW" == "true" ];then
+      __NWLEN=`echo ${__SHORTNWNAME} | wc -c | xargs -I{} expr {} - 1`
+      if [ $__NWLEN -gt ${__SHORTNW_CHAR} ];then
+        __SHORTNWNAME=`echo ${__SHORTNWNAME} | cut -b -${__SHORTNW_CHAR}`~
+      fi
+    fi
+    # CHECKPUBLICROUTE_DEV=`ip route get 8.8.8.8 2>/dev/null | head -n 1 | sed -e "s/.*dev //" | sed -e "s/ *src .*//"`
+    PROMPT="[${__SHORTUSERNAME}@${__SHORTHOSTNAME}(${__SHORTNWNAME})] ${YELLOW}\W${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
     ls .git 1>/dev/null 2>/dev/null
