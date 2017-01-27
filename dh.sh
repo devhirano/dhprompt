@@ -46,6 +46,9 @@ __SHORTNW_CHAR="4"
 __DATE="true"
 __DATE_FMT="%H:%M"
 # __DATE_FMT="%H:%M:%S"
+__SHOW_PROXY="true"
+__SHOW_SCREEN_SESSIONS="true"
+__SCREEN_SESSIONS_WC="0"
 
 
 
@@ -165,8 +168,22 @@ function exitstatus {
     fi
 
     PROXYVAR=""
-    if [ -n "$HTTP_PROXY" -o -n "$HTTPS_PROXY" -o -n "$http_proxy" -o -n "$https_proxy" ]; then
-      PROXYVAR=" (P)";
+    if [ "$__SHOW_PROXY" == "true" ];then
+      if [ -n "$HTTP_PROXY" -o -n "$HTTPS_PROXY" -o -n "$http_proxy" -o -n "$https_proxy" ]; then
+        PROXYVAR=" (P";
+      fi
+    fi
+    if [ "${__SHOW_SCREEN_SESSIONS}" == "true" ];then
+      __SCREEN_SESSIONS_WC=`expr $(screen -ls | wc -l) - 2`
+      if [ "$PROXYVAR" == "" ];then
+        PROXYVAR=" (s${__SCREEN_SESSIONS_WC})"
+      else
+        PROXYVAR="${PROXYVAR}s${__SCREEN_SESSIONS_WC})"
+      fi
+    else
+      if [ "$PROXYVAR" != "" ];then
+        PROXYVAR="${PROXYVAR})"
+      fi
     fi
 
     if [ "$__DATE" == "true" ];then
