@@ -47,6 +47,7 @@ __DATE="true"
 __DATE_FMT="%H:%M"
 # __DATE_FMT="%H:%M:%S"
 __SHOW_PROXY="true"
+__INSTALLED_SCREEN=`which screen`
 __SHOW_SCREEN_SESSIONS="true"
 __SCREEN_SESSIONS_WC="0"
 
@@ -173,7 +174,7 @@ function exitstatus {
         PROXYVAR=" (P";
       fi
     fi
-    if [ "${__SHOW_SCREEN_SESSIONS}" == "true" ];then
+    if [ "${__SHOW_SCREEN_SESSIONS}" == "true" -a "${__INSTALLED_SCREEN}" != "" ];then
       __SCREEN_SESSIONS_WC=`expr $(screen -ls | wc -l) - 2`
       if [ "$PROXYVAR" == "" ];then
         PROXYVAR=" (s${__SCREEN_SESSIONS_WC})"
