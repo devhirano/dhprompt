@@ -185,19 +185,19 @@ function exitstatus {
     PROXYVAR=""
     if [ "$__SHOW_PROXY" == "true" ];then
       if [ -n "$HTTP_PROXY" -o -n "$HTTPS_PROXY" -o -n "$http_proxy" -o -n "$https_proxy" ]; then
-        PROXYVAR=" (P";
+        PROXYVAR=" [P";
       fi
     fi
     if [ "${__SHOW_SCREEN_SESSIONS}" == "true" -a "${__INSTALLED_SCREEN}" != "" ];then
       __SCREEN_SESSIONS_WC=`expr $(screen -ls | wc -l) - 2`
       if [ "$PROXYVAR" == "" ];then
-        PROXYVAR=" (s${__SCREEN_SESSIONS_WC})"
+        PROXYVAR=" [s${__SCREEN_SESSIONS_WC}]"
       else
-        PROXYVAR="${PROXYVAR}s${__SCREEN_SESSIONS_WC})"
+        PROXYVAR="${PROXYVAR}s${__SCREEN_SESSIONS_WC}]"
       fi
     else
       if [ "$PROXYVAR" != "" ];then
-        PROXYVAR="${PROXYVAR})"
+        PROXYVAR="${PROXYVAR}]"
       fi
     fi
 
