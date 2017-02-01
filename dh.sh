@@ -169,8 +169,8 @@ function exitstatus {
         now=`date +%s`
         diff=`echo $now - $timestamp | bc -l 2>/dev/null`
         
-        # two days
-        if [ `echo $diff' >= 2*24*60' | bc -l` == "1" ]; then
+        # one hour
+        if [ `echo $diff' >= 60*60' | bc -l` == "1" ]; then
             echo "!dhprompt: git fetched date is too long, force fetch remote"
             git fetch --tags 2>/dev/null
             if [ $? == 0 ];then
