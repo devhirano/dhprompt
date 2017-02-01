@@ -51,6 +51,8 @@ __INSTALLED_SCREEN=`which screen`
 __SHOW_SCREEN_SESSIONS="true"
 __SCREEN_SESSIONS_WC="0"
 
+__CACHE_GITHOME="true"
+
 
 
 #-----------------------------------------------------------
@@ -135,6 +137,14 @@ function exitstatus {
     CYAN="\[\e[36;1m\]"
     VIOLET="\[\e[35;1m\]"
     OFF="\[\033[m\]"
+
+    if [ "$__CACHE_GITHOME" == "true" ];then
+      ls .git 1>/dev/null 2>/dev/null
+      if [ $? == 0 ];then
+        __CACHE_GITHOME_PATH=`pwd`
+        export WD=$__CACHE_GITHOME_PATH
+      fi
+    fi
 
     # PROMPT="[\u@\h ${BLUE}\W${OFF}"
     # PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
