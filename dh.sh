@@ -36,6 +36,7 @@ __SHORTUSER="true"
 __SHORTUSER_CHAR="4"
 __SIMPLE="false"
 __FETCH_CHECK="true"
+__FETCH_BRANCH="origin"
 __GOOD_KAOMOJI_SHOW="false"
 __GOOD_KAOMOJI=(":)")
 __BAD_KAOMOJI_RANDOM="true"
@@ -171,13 +172,16 @@ function exitstatus {
         
         # one hour
         if [ `echo $diff' >= 60*60' | bc -l` == "1" ]; then
-            echo "!dhprompt: git fetched date is too long, force fetch remote"
-            git fetch --tags 2>/dev/null
+            git remote |grep ${__FETCH_BRANCH} 1>/dev/null 2>/dev/null
             if [ $? == 0 ];then
-              echo "!dhprompt: git diff origin/master --stat"
-              git diff origin/master --stat
-            else
-              echo "!dhprompt: doesn't have origin branch"
+              echo "!dhprompt: git fetched date is too long, force fetch remote"
+              git fetch --tags 2>/dev/null
+              if [ $? == 0 ];then
+                echo "!dhprompt: git diff ${__FETCH_BRANCH}/master --stat"
+                git diff ${__FETCH_BRANCH}/master --stat
+              else
+                echo "!dhprompt: doesn't have ${__FETCH_BRANCH} branch"
+              fi
             fi
         fi
     fi
