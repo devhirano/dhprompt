@@ -46,6 +46,12 @@ __SHORTNW_CHAR="4"
 __DATE="true"
 __DATE_FMT="%H:%M"
 # __DATE_FMT="%H:%M:%S"
+__SHOW_PROXY="true"
+__INSTALLED_SCREEN=`which screen`
+__SHOW_SCREEN_SESSIONS="true"
+__SCREEN_SESSIONS_WC="0"
+
+__CACHE_GITHOME="true"
 
 
 
@@ -132,6 +138,14 @@ function exitstatus {
     VIOLET="\[\e[35;1m\]"
     OFF="\[\033[m\]"
 
+    if [ "$__CACHE_GITHOME" == "true" ];then
+      ls .git 1>/dev/null 2>/dev/null
+      if [ $? == 0 ];then
+        __CACHE_GITHOME_PATH=`pwd`
+        export WD=$__CACHE_GITHOME_PATH
+      fi
+    fi
+
     # PROMPT="[\u@\h ${BLUE}\W${OFF}"
     # PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
     __SHORTNWNAME=`ip route get 8.8.8.8 2>/dev/null | head -n 1 | sed -e "s/.*dev //" | sed -e "s/ *src .*//" `
@@ -169,8 +183,22 @@ function exitstatus {
     fi
 
     PROXYVAR=""
-    if [ -n "$HTTP_PROXY" -o -n "$HTTPS_PROXY" -o -n "$http_proxy" -o -n "$https_proxy" ]; then
-      PROXYVAR=" (P)";
+    if [ "$__SHOW_PROXY" == "true" ];then
+      if [ -n "$HTTP_PROXY" -o -n "$HTTPS_PROXY" -o -n "$http_proxy" -o -n "$https_proxy" ]; then
+        PROXYVAR=" (P";
+      fi
+    fi
+    if [ "${__SHOW_SCREEN_SESSIONS}" == "true" -a "${__INSTALLED_SCREEN}" != "" ];then
+      __SCREEN_SESSIONS_WC=`expr $(screen -ls | wc -l) - 2`
+      if [ "$PROXYVAR" == "" ];then
+        PROXYVAR=" (s${__SCREEN_SESSIONS_WC})"
+      else
+        PROXYVAR="${PROXYVAR}s${__SCREEN_SESSIONS_WC})"
+      fi
+    else
+      if [ "$PROXYVAR" != "" ];then
+        PROXYVAR="${PROXYVAR})"
+      fi
     fi
 
     if [ "$__DATE" == "true" ];then
