@@ -81,7 +81,8 @@ fi
 
 grep "dh.sh" $HOME/.bashrc > /dev/null
 if [ $? -ne 0 ];then
-  __FILEPATH=`readlink -f dh.sh`
+  __FILEDIR=$(cd $(dirname ${BASH_SOURCE:-$0}); pwd)
+  __FILEPATH=`readlink -f "$__FILEDIR/dh.sh"`
   echo "source $__FILEPATH " >> $HOME/.bashrc
 fi
 
