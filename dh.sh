@@ -121,6 +121,9 @@ if [ "$__SHORTUSER" == "true" ];then
   fi
 fi
 
+RANDCOLOR=$(( $RANDOM * 6 / 32767 + 1 ))
+RANDCOLOR="\[\e[3${RANDCOLOR}m\]"
+
 function exitstatus {
 
     EXITSTATUS="$?"
@@ -158,7 +161,7 @@ function exitstatus {
       fi
     fi
     # CHECKPUBLICROUTE_DEV=`ip route get 8.8.8.8 2>/dev/null | head -n 1 | sed -e "s/.*dev //" | sed -e "s/ *src .*//"`
-    PROMPT="[${__SHORTUSERNAME}@${__SHORTHOSTNAME}(${__SHORTNWNAME})] ${YELLOW}\W${OFF}"
+    PROMPT="[${__SHORTUSERNAME}@${RANDCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}\W${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
     ls .git 1>/dev/null 2>/dev/null
