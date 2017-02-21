@@ -143,7 +143,7 @@ function exitstatus {
       ls .git 1>/dev/null 2>/dev/null
       if [ $? == 0 ];then
         __CACHE_GITHOME_PATH=`pwd`
-        export WD=$__CACHE_GITHOME_PATH
+        export RR=$__CACHE_GITHOME_PATH
       fi
     fi
 
