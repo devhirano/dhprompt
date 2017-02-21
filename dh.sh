@@ -81,7 +81,8 @@ fi
 
 grep "dh.sh" $HOME/.bashrc > /dev/null
 if [ $? -ne 0 ];then
-  __FILEPATH=`readlink -f dh.sh`
+  __FILEDIR=$(cd $(dirname ${BASH_SOURCE:-$0}); pwd)
+  __FILEPATH=`readlink -f "$__FILEDIR/dh.sh"`
   echo "source $__FILEPATH " >> $HOME/.bashrc
 fi
 
@@ -120,6 +121,9 @@ if [ "$__SHORTUSER" == "true" ];then
   fi
 fi
 
+RANDCOLOR=$(( $RANDOM * 6 / 32767 + 1 ))
+RANDCOLOR="\[\e[3${RANDCOLOR}m\]"
+
 function exitstatus {
 
     EXITSTATUS="$?"
@@ -157,7 +161,7 @@ function exitstatus {
       fi
     fi
     # CHECKPUBLICROUTE_DEV=`ip route get 8.8.8.8 2>/dev/null | head -n 1 | sed -e "s/.*dev //" | sed -e "s/ *src .*//"`
-    PROMPT="[${__SHORTUSERNAME}@${__SHORTHOSTNAME}(${__SHORTNWNAME})] ${YELLOW}\W${OFF}"
+    PROMPT="[${__SHORTUSERNAME}@${RANDCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}\W${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
     ls .git 1>/dev/null 2>/dev/null
