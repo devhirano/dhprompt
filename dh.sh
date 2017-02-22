@@ -151,6 +151,12 @@ function exitstatus {
       fi
     fi
 
+    __PYENV_VERSION=`pyenv version 2>/dev/null |awk '{print $1}'`
+    if [ $? == 0 ];then
+        __PYENV_MESSAGE="(${__PYENV_VERSION})"
+    fi
+
+
     # PROMPT="[\u@\h ${BLUE}\W${OFF}"
     # PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
     __SHORTNWNAME=`ip route get 8.8.8.8 2>/dev/null | head -n 1 | sed -e "s/.*dev //" | sed -e "s/ *src .*//" `
@@ -220,9 +226,9 @@ function exitstatus {
       # PS1="${PROMPT} ${BOLD}${GREEN}:)${OFF}$(__git_ps1)]\$ "
     
       if [ "$__GOOD_KAOMOJI_SHOW" == "true" ];then
-        PS1="${__NOW}${PROMPT}${PROXYVAR} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} "
+        PS1="${__NOW}${PROMPT}${PROXYVAR} ${__PYENV_MESSAGE} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} "
       else
-        PS1="${__NOW}${PROMPT}${PROXYVAR}${OFF}$(__git_ps1) ${__ISROOT} "
+        PS1="${__NOW}${PROMPT}${PROXYVAR} ${__PYENV_MESSAGE}${OFF}$(__git_ps1) ${__ISROOT} "
       fi
     else
       if [ "$__BAD_KAOMOJI_RANDOM" == "true" ];then
@@ -233,7 +239,7 @@ function exitstatus {
       fi
 
       # PS1="${PROMPT}${PROXYVAR}${BOLD}${RED}:(${OFF}$(__git_ps1) ${__ISROOT} "
-      PS1="${__NOW}${PROMPT}${PROXYVAR}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} "
+      PS1="${__NOW}${PROMPT}${PROXYVAR} ${__PYENV_MESSAGE}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} "
     fi
 
     PS2="${BOLD}>${OFF} "
