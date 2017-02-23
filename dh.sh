@@ -151,9 +151,14 @@ function exitstatus {
       fi
     fi
 
-    __PYENV_VERSION=`pyenv version 2>/dev/null |awk '{print $1}'`
+    __IS_PYENV=`which pyenv 1>/dev/null 2>/dev/null`
     if [ $? == 0 ];then
-        __PYENV_MESSAGE="(${__PYENV_VERSION})"
+      __PYENV_VERSION=`pyenv version 2>/dev/null |awk '{print $1}'`
+      if [ $? == 0 -a ${__PYENV_VERSION} -ne "" ];then
+          __PYENV_MESSAGE=" (${__PYENV_VERSION})"
+      else
+          __PYENV_MESSAGE=""
+      fi
     fi
 
 
@@ -226,9 +231,9 @@ function exitstatus {
       # PS1="${PROMPT} ${BOLD}${GREEN}:)${OFF}$(__git_ps1)]\$ "
     
       if [ "$__GOOD_KAOMOJI_SHOW" == "true" ];then
-        PS1="${__NOW}${PROMPT}${PROXYVAR} ${__PYENV_MESSAGE} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} "
+        PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} "
       else
-        PS1="${__NOW}${PROMPT}${PROXYVAR} ${__PYENV_MESSAGE}${OFF}$(__git_ps1) ${__ISROOT} "
+        PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE}${OFF}$(__git_ps1) ${__ISROOT} "
       fi
     else
       if [ "$__BAD_KAOMOJI_RANDOM" == "true" ];then
@@ -239,7 +244,7 @@ function exitstatus {
       fi
 
       # PS1="${PROMPT}${PROXYVAR}${BOLD}${RED}:(${OFF}$(__git_ps1) ${__ISROOT} "
-      PS1="${__NOW}${PROMPT}${PROXYVAR} ${__PYENV_MESSAGE}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} "
+      PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} "
     fi
 
     PS2="${BOLD}>${OFF} "
