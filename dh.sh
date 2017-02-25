@@ -124,7 +124,7 @@ fi
 RANDCOLOR=$(( $RANDOM * 6 / 32767 + 1 ))
 RANDCOLOR="\[\e[3${RANDCOLOR}m\]"
 
-__IS_PYENV=`which pyenv 1>/dev/null 2>/dev/null`
+__IS_PYENV=`which pyenv 2>/dev/null`
 __PYENV_MESSAGE=""
 
 function exitstatus {
@@ -154,7 +154,6 @@ function exitstatus {
       fi
     fi
 
-    __IS_PYENV=`which pyenv 1>/dev/null 2>/dev/null`
     if [ "${__IS_PYENV}" != "" ];then
       __PYENV_VERSION=`pyenv version 2>/dev/null |awk '{print $1}'`
       if [ $? == 0 -a "${__PYENV_VERSION}" != "" ];then
