@@ -179,7 +179,7 @@ function exitstatus {
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
     ls .git 1>/dev/null 2>/dev/null
-    if [ $? == 0 -a "$__FETCH_CHECK" == "true" -a $__GIT_REMOTE_AMOUNT -ge 1 ];then
+    if [ $? == 0 -a "$__FETCH_CHECK" == "true" -a $__GIT_REMOTE_AMOUNT -ge 1 -a -e ".git/HEAD" ];then
         # this is what I need:
         last_fetch_date=`stat .git/FETCH_HEAD 2>/dev/null |grep Modify | awk '{print $2" "$3}' 2>/dev/null`
         
