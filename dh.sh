@@ -250,6 +250,9 @@ function exitstatus {
       PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} "
     fi
 
+	WORKING_DIRECTORY='\[\e[$[COLUMNS-$(echo -n " (\w)" | wc -c)]C\e[1;35m(\w)\e[0m\e[$[COLUMNS]D\]'
+	PS1=${WORKING_DIRECTORY}${PS1}
+
     PS2="${BOLD}>${OFF} "
 }
 
