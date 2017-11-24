@@ -86,6 +86,12 @@ if [ $? -ne 0 ];then
   echo "source $__FILEPATH " >> $HOME/.bashrc
 fi
 
+which bc 1>&2 >/dev/null
+if [ $? -ne 0 ];then
+  sudo apt update && sudo apt install bc -y
+fi
+
+
 ######################################################
 # you can write git-prompt and git-completion options
 
