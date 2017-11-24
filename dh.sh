@@ -130,11 +130,12 @@ __PYENV_MESSAGE=""
 function exitstatus {
 
     EXITSTATUS="$?"
+    LASTCOMMAND="$PROMPT_COMMAND"
 
     if [ "$__SIMPLE" == "true" ];then
       PS1="\W ${__ISROOT} "
       PS2="${BOLD}>${OFF} "
-      return 
+      return
     fi
 
     BOLD="\[\033[1m\]"
@@ -155,7 +156,7 @@ function exitstatus {
     fi
 
     if [ "${__IS_PYENV}" != "" ];then
-      __PYENV_VERSION=`pyenv version 2>/dev/null |awk '{print $1}'`
+      __PYENV_VERSION=`pyenv version 2>/dev/null |awk '{print $1}'` |sed -e 's/\\n//'
       if [ $? == 0 -a "${__PYENV_VERSION}" != "" ];then
           __PYENV_MESSAGE=" (${__PYENV_VERSION})"
       else
@@ -253,6 +254,14 @@ function exitstatus {
 	PS1=${WORKING_DIRECTORY}${PS1}
 
     PS2="${BOLD}>${OFF} "
+    
+    if [ "${previous_command}" != "exitstatus" ]; then
+        echo
+        echo "command: ${previous_command}"
+    else
+        PS1="${__NOW}${__ISROOT} "
+    fi
 }
 
 PROMPT_COMMAND=exitstatus
+trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
