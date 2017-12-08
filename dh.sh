@@ -15,10 +15,10 @@
 
 #   change mode
 #    $ export __SIMPLE="true"
-#    
+#
 #      [devhirano@devhirano-HP~] ~ $ export __SIMPLE=true
 #      ~ $
-#   
+#
 #    $ export __SIMPLE="false"
 #      ~ $ export __SIMPLE=false
 #      [devhirano@devhirano-HP~] ~ $
@@ -31,16 +31,16 @@
 
 # configuration for dhprompt
 __SHORTHOST="true"
-__SHORTHOST_CHAR="6"
+__SHORTHOST_CHAR="8"
 __SHORTUSER="true"
-__SHORTUSER_CHAR="4"
+__SHORTUSER_CHAR="6"
 __SIMPLE="false"
 __FETCH_CHECK="true"
 __FETCH_BRANCH="origin"
 __GOOD_KAOMOJI_SHOW="false"
 __GOOD_KAOMOJI=(":)")
 __BAD_KAOMOJI_RANDOM="true"
-__BAD_KAOMOJI=(":(" "(#\\\`_>´)" "(´-ω-\\\`)" "(;ω;)" "(ﾉД\\\`)" "┐(´д\\\`)┌") 
+__BAD_KAOMOJI=(":(" "(#\\\`_>´)" "(´-ω-\\\`)" "(;ω;)" "(ﾉД\\\`)" "┐(´д\\\`)┌")
 __CHECK_NW="true"
 __SHORTNW="true"
 __SHORTNW_CHAR="4"
@@ -134,9 +134,18 @@ __IS_PYENV=`which pyenv 2>/dev/null`
 __PYENV_MESSAGE=""
 
 function exitstatus {
+    if [ "$__DATE" == "true" ];then
+        __NOW=`date +"${__DATE_FMT}"`" "
+    else
+        __NOW=""
+    fi
+
+    if [ "${previous_command}" = "exitstatus" ]; then
+        PS1="${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
+        return 0
+    fi
 
     EXITSTATUS="$?"
-    LASTCOMMAND="$PROMPT_COMMAND"
 
     if [ "$__SIMPLE" == "true" ];then
       PS1="\W ${__ISROOT} "
@@ -171,8 +180,6 @@ function exitstatus {
     fi
 
 
-    # PROMPT="[\u@\h ${BLUE}\W${OFF}"
-    # PROMPT="[\u@${__SHORTHOSTNAME}] ${YELLOW}\W${OFF}"
     __SHORTNWNAME=`ip route get 8.8.8.8 2>/dev/null | head -n 1 | sed -e "s/.*dev //" | sed -e "s/ *src .*//" `
     if [ "$__SHORTNW" == "true" ];then
       __NWLEN=`echo ${__SHORTNWNAME} | wc -c | xargs -I{} expr {} - 1`
@@ -184,16 +191,15 @@ function exitstatus {
     PROMPT="[${RANDCOLOR}${__SHORTUSERNAME}${OFF}@${RANDCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}\W${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
-    ls .git 1>/dev/null 2>/dev/null
-    if [ $? == 0 -a "$__FETCH_CHECK" == "true" -a $__GIT_REMOTE_AMOUNT -ge 1 -a -e ".git/HEAD" ];then
+    if [ -a "./.git" -a "$__FETCH_CHECK" == "true" -a $__GIT_REMOTE_AMOUNT -ge 1 -a -e ".git/HEAD" ];then
         # this is what I need:
         last_fetch_date=`stat .git/FETCH_HEAD 2>/dev/null |grep Modify | awk '{print $2" "$3}' 2>/dev/null`
-        
+
         # do the math to see how long ago
         timestamp=`date -d "$last_fetch_date" +%s 2>/dev/null`
         now=`date +%s`
         diff=`echo $now - $timestamp | bc -l 2>/dev/null`
-        
+
         # one hour
         if [ `echo $diff' >= 60*60' | bc -l` == "1" ]; then
             git remote |grep ${__FETCH_BRANCH} 1>/dev/null 2>/dev/null
@@ -229,16 +235,10 @@ function exitstatus {
       fi
     fi
 
-    if [ "$__DATE" == "true" ];then
-        __NOW=`date +"${__DATE_FMT}"`" "
-    else
-        __NOW=""
-    fi
-
     if [ "${EXITSTATUS}" -eq 0 ]
     then
       # PS1="${PROMPT} ${BOLD}${GREEN}:)${OFF}$(__git_ps1)]\$ "
-    
+
       if [ "$__GOOD_KAOMOJI_SHOW" == "true" ];then
         # PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} "
         PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} \n${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
@@ -262,13 +262,13 @@ function exitstatus {
 	PS1=${WORKING_DIRECTORY}${PS1}
 
     PS2="${BOLD}>${OFF} "
-    
     if [ "${previous_command}" != "exitstatus" ]; then
         echo
         echo "(command: ${previous_command})"
     else
         PS1="${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
     fi
+    # PS1="${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
 }
 
 PROMPT_COMMAND=exitstatus
