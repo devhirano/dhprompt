@@ -134,6 +134,8 @@ __IS_PYENV=`which pyenv 2>/dev/null`
 __PYENV_MESSAGE=""
 
 function exitstatus {
+    EXITSTATUS="$?"
+
     if [ "$__DATE" == "true" ];then
         __NOW=`date +"${__DATE_FMT}"`" "
     else
@@ -144,8 +146,6 @@ function exitstatus {
         PS1="${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
         return 0
     fi
-
-    EXITSTATUS="$?"
 
     if [ "$__SIMPLE" == "true" ];then
       PS1="\W ${__ISROOT} "
