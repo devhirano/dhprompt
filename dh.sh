@@ -67,6 +67,11 @@ __SCRIPT_DIR="$HOME/.dhprompt"
 
 mkdir -p $__SCRIPT_DIR
 
+which curl 1>&2 >/dev/null
+if [ $? -ne 0 ];then
+  sudo apt update && sudo apt install curl -y
+fi
+
 source $__SCRIPT_DIR/git-completion.bash
 if [ $? -ne 0 ];then
   curl -o $__SCRIPT_DIR/git-completion.bash https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
