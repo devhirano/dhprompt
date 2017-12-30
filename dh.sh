@@ -54,7 +54,8 @@ __SCREEN_SESSIONS_WC="0"
 
 __CACHE_GITHOME="true"
 
-
+# Directory color "BLUE/34" is hard to see so will be change it"
+__LS_COLORS_DIR="1;33"
 
 #-----------------------------------------------------------
 # kaomoji
@@ -64,6 +65,8 @@ __ARRAY_RAND=`expr $RANDOM % ${__ARRAY_SIZE}`
 
 # dir
 __SCRIPT_DIR="$HOME/.dhprompt"
+
+[ -n $__LS_COLORS_DIR ] && export LS_COLORS="$LS_COLORS:di=$__LS_COLORS_DIR"
 
 mkdir -p $__SCRIPT_DIR
 
