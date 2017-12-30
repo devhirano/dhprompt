@@ -57,6 +57,8 @@ __CACHE_GITHOME="true"
 # Directory color "BLUE/34" is hard to see so will be change it"
 __LS_COLORS_DIR="1;33"
 
+set -x
+
 #-----------------------------------------------------------
 # kaomoji
 __ARRAY_SIZE=${#__BAD_KAOMOJI[*]}
@@ -91,7 +93,19 @@ grep "dh.sh" $HOME/.bashrc > /dev/null
 if [ $? -ne 0 ];then
   __FILEDIR=$(cd $(dirname ${BASH_SOURCE:-$0}); pwd)
   __FILEPATH=`readlink -f "$__FILEDIR/dh.sh"`
-  echo "source $__FILEPATH " >> $HOME/.bashrc
+  echo "source $__FILEPATH" >> $HOME/.bashrc
+fi
+
+INSERTED_LINE=$(grep -Ens '^source.*\/dh\.sh' $HOME/.bashrc | sed -e 's/:.*//g')
+SHOULD_LINE=$(wc -l $HOME/.bashrc  |sed -e 's/ .*//g')
+if [ "$INSERTED_LINE" != "$SHOULD_LINE" ]; then
+  cp -fp ~/.bashrc ~/.bashrc.back
+  __FILEPATH=$(grep -Ens '^source.*\/dh\.sh' $HOME/.bashrc |head -n 1| sed -e 's/.*://g')
+  for i in $(echo ${INSERTED_LINE} | sed -e 's/ /\n/g' |tac)
+  do
+    sed -i "${i}d" $HOME/.bashrc
+  done
+  echo "$__FILEPATH" >> $HOME/.bashrc
 fi
 
 which bc 1>&2 >/dev/null
