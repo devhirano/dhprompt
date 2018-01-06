@@ -57,7 +57,6 @@ __CACHE_GITHOME="true"
 # Directory color "BLUE/34" is hard to see so will be change it"
 __LS_COLORS_DIR="1;33"
 
-set -x
 
 #-----------------------------------------------------------
 # kaomoji
