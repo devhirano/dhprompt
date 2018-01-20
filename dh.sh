@@ -154,8 +154,23 @@ RANDCOLOR="\[\e[3${RANDCOLOR}m\]"
 __IS_PYENV=`which pyenv 2>/dev/null`
 __PYENV_MESSAGE=""
 
-function exitstatus {
-    EXITSTATUS="$?"
+
+CURRENT_XTRACE=""
+
+stash_xtrace () {
+    {
+    if [ -z "$CURRENT_XTRACE" -o "$CURRENT_XTRACE" != "$-" ]; then
+        CURRENT_XTRACE=$- &> /dev/null
+    fi
+    } >> /dev/null 2>&1
+}
+
+dhprompt () {
+    {
+    EXITSTATUS="$?" >/dev/null 2>&1
+
+    stash_xtrace
+    set +x
 
     if [ "$__DATE" == "true" ];then
         __NOW=`date +"${__DATE_FMT}"`" "
@@ -163,8 +178,16 @@ function exitstatus {
         __NOW=""
     fi
 
-    if [ "${previous_command}" = "exitstatus" ]; then
+    if [ "${previous_command}" = "dhprompt" ]; then
         PS1="${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
+        case "${CURRENT_XTRACE}" in
+            *x* )
+                set -x
+                ;;
+            *)
+                ;;
+        esac
+        CURRENT_XTRACE=""
         return 0
     fi
 
@@ -279,18 +302,30 @@ function exitstatus {
       PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} \n${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
     fi
 
-	WORKING_DIRECTORY='\[\e[$[COLUMNS-$(echo -n " (\w)" | wc -c)]C\e[1;35m(\w)\e[0m\e[$[COLUMNS]D\]'
-	PS1=${WORKING_DIRECTORY}${PS1}
+	# WORKING_DIRECTORY='\[\e[$[COLUMNS-$(echo -n " (\w)" | wc -c)]C\e[1;35m(\w)\e[0m\e[$[COLUMNS]D\]'
+	# PS1=${WORKING_DIRECTORY}${PS1}
 
     PS2="${BOLD}>${OFF} "
-    if [ "${previous_command}" != "exitstatus" ]; then
+    if [ "${previous_command}" != "dhprompt" ]; then
         echo
         echo "(command: ${previous_command})"
     else
         PS1="${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
     fi
     # PS1="${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
+
+
+    case "${CURRENT_XTRACE}" in
+        *x* )
+            set -x
+            ;;
+        *)
+            ;;
+    esac
+    CURRENT_XTRACE=""
+
+    } >> /dev/null 2>&1
 }
 
-PROMPT_COMMAND=exitstatus
-trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+PROMPT_COMMAND=dhprompt
+trap '{ stash_xtrace; previous_command=$this_command; this_command=$BASH_COMMAND; } > /dev/null 2>&1' DEBUG > /dev/null 2>&1
