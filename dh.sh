@@ -157,10 +157,12 @@ __PYENV_MESSAGE=""
 # Prepare Logging
 __AUTO_LOGGING="true"
 __LOG_DIR="$HOME/.dhprompt/log"
-__LOG_FILE_DATE_FORMAT="%Y%m%d"
-__LOG_NAME_PREFIX="$(date +${__LOG_FILE_DATE_FORMAT})"
-__LOG_FILE_COMMAND="${__LOG_DIR}/${__LOG_NAME_PREFIX}-$$-command.log"
-__LOG_FILE_STD="${__LOG_DIR}/${__LOG_NAME_PREFIX}-$$-std.log"
+__LOG_FILE_DATE_FORMAT_PREFIX="%Y%m%d"
+__LOG_FILE_DATE_FORMAT_SUFFIX="%H%M%S"
+__LOG_NAME_PREFIX="$(date +${__LOG_FILE_DATE_FORMAT_PREFIX})"
+__LOG_NAME_SUFFIX="$(date +${__LOG_FILE_DATE_FORMAT_SUFFIX})"
+__LOG_FILE_COMMAND="${__LOG_DIR}/${__LOG_NAME_PREFIX}-${__LOG_NAME_SUFFIX}-$$-command.log"
+__LOG_FILE_STD="${__LOG_DIR}/${__LOG_NAME_PREFIX}-${__LOG_NAME_SUFFIX}-$$-std.log"
 [ -d "${__LOG_DIR}" ] || mkdir -p ${__LOG_DIR}
 
 # Output out
