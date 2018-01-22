@@ -57,7 +57,6 @@ __CACHE_GITHOME="true"
 # Directory color "BLUE/34" is hard to see so will be change it"
 __LS_COLORS_DIR="1;33"
 
-
 #-----------------------------------------------------------
 # kaomoji
 __ARRAY_SIZE=${#__BAD_KAOMOJI[*]}
@@ -155,6 +154,19 @@ __IS_PYENV=`which pyenv 2>/dev/null`
 __PYENV_MESSAGE=""
 
 
+# Prepare Logging
+__AUTO_LOGGING="true"
+__LOG_DIR="$HOME/.dhprompt/log"
+__LOG_FILE_DATE_FORMAT="%Y%m%d"
+__LOG_NAME_PREFIX="$(date +${__LOG_FILE_DATE_FORMAT})"
+__LOG_FILE_COMMAND="${__LOG_DIR}/${__LOG_NAME_PREFIX}-$$-command.log"
+__LOG_FILE_STD="${__LOG_DIR}/${__LOG_NAME_PREFIX}-$$-std.log"
+[ -d "${__LOG_DIR}" ] || mkdir -p ${__LOG_DIR}
+
+# Output out
+__OUTPUT_TARGET="/dev/null"
+
+
 CURRENT_XTRACE=""
 
 stash_xtrace () {
@@ -162,7 +174,7 @@ stash_xtrace () {
     if [ -z "$CURRENT_XTRACE" -o "$CURRENT_XTRACE" != "$-" ]; then
         CURRENT_XTRACE=$- &> /dev/null
     fi
-    } >> /dev/null 2>&1
+    } > ${__OUTPUT_TARGET} 2>&1
 }
 
 dhprompt () {
@@ -189,6 +201,11 @@ dhprompt () {
         esac
         CURRENT_XTRACE=""
         return 0
+    fi
+
+    # Logging Command
+    if [ -n "${__AUTO_LOGGING}" ];then
+      echo ${previous_command} >> ${__LOG_FILE_COMMAND}
     fi
 
     if [ "$__SIMPLE" == "true" ];then
@@ -324,8 +341,14 @@ dhprompt () {
     esac
     CURRENT_XTRACE=""
 
-    } >> /dev/null 2>&1
+    } > ${__OUTPUT_TARGET} 2>&1
 }
 
+if [ -n "${__AUTO_LOGGING}" ];then
+  echo "logfile: ${__LOG_FILE_STD}"
+  exec &> >(tee -a ${__LOG_FILE_STD})
+fi
+
 PROMPT_COMMAND=dhprompt
-trap '{ stash_xtrace; previous_command=$this_command; this_command=$BASH_COMMAND; } > /dev/null 2>&1' DEBUG > /dev/null 2>&1
+trap '{ stash_xtrace; previous_command=$this_command; this_command=$BASH_COMMAND; } > ${__OUTPUT_TARGET} 2>&1' DEBUG > /dev/null 2>&1
+
