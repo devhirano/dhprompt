@@ -346,6 +346,9 @@ dhprompt () {
 
 if [ -n "${__AUTO_LOGGING}" ];then
   echo "logfile: ${__LOG_FILE_STD}"
+  echo "*** Don't 'tail -f' in same console. It logs from itself. ***"
+  echo
+  # this method is not correct way, should fix
   exec &> >(tee -a ${__LOG_FILE_STD})
 fi
 
