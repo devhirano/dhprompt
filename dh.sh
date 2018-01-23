@@ -156,6 +156,9 @@ __PYENV_MESSAGE=""
 
 # Prepare Logging
 __AUTO_LOGGING="true"
+LOGGING_ONESHOT=""
+CURRENT_LOGGING=""
+__SCRIPT_PID="INCORRECTPID"
 __LOG_DIR="$HOME/.dhprompt/log"
 __LOG_FILE_DATE_FORMAT_PREFIX="%Y%m%d"
 __LOG_FILE_DATE_FORMAT_SUFFIX="%H%M%S"
@@ -346,13 +349,19 @@ dhprompt () {
     } > ${__OUTPUT_TARGET} 2>&1
 }
 
-if [ -n "${__AUTO_LOGGING}" ];then
-  echo "logfile: ${__LOG_FILE_STD}"
-  echo "*** Don't 'tail -f' in same console. It logs from itself. ***"
-  echo
-  # this method is not correct way, should fix
-  exec &> >(tee -a ${__LOG_FILE_STD})
+# ppid が script なら起動済み
+if [ -n "${__AUTO_LOGGING}" -o -n "${LOGGING_ONESHOT}" ];then
+  CURRENT_LOGGING=$(ps -o pid,args -e |grep "$(ps -p $(echo $$) -o ppid)" | grep -v grep | grep [s]cript)
+  if [ -z "$CURRENT_LOGGING" ];then
+    script -a ${__LOG_FILE_STD}
+    echo "*** auto logging is using "script" command, so terminal is wrapped in it ***"
+    echo "*** first "exit" is for script command, then you should exit twice when exit terminal ***"
+  fi
 fi
+
+enable_terminal_logging () {
+    LOGGING_ONESHOT="true"
+}
 
 PROMPT_COMMAND=dhprompt
 trap '{ stash_xtrace; previous_command=$this_command; this_command=$BASH_COMMAND; } > ${__OUTPUT_TARGET} 2>&1' DEBUG > /dev/null 2>&1
