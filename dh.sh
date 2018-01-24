@@ -30,6 +30,9 @@
 #  this can use for only bash
 
 # configuration for dhprompt
+
+__DHPROMPT_BANNER="true"
+
 __SHORTHOST="true"
 __SHORTHOST_CHAR="8"
 __SHORTUSER="true"
@@ -353,9 +356,14 @@ dhprompt () {
 if [ -n "${__AUTO_LOGGING}" -o -n "${LOGGING_ONESHOT}" ];then
   CURRENT_LOGGING=$(ps -o pid,args -e |grep "$(ps -p $(echo $$) -o ppid)" | grep -v grep | grep [s]cript)
   if [ -z "$CURRENT_LOGGING" ];then
-    script -a ${__LOG_FILE_STD}
-    echo "*** auto logging is using "script" command, so terminal is wrapped in it ***"
-    echo "*** first "exit" is for script command, then you should exit twice when exit terminal ***"
+
+    if [ -n "${__DHPROMPT_BANNER}" ];then
+      echo " *** dhprompt notice ***"
+      echo " - don't 'tail -f LOGFILE', write and read are never end"
+      echo " - logging is wrapped in typescript session, so need exit twice"
+      echo
+    fi
+    script -f -a ${__LOG_FILE_STD}
   fi
 fi
 
