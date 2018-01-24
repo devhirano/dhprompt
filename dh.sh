@@ -73,21 +73,60 @@ __SCRIPT_DIR="$HOME/.dhprompt"
 
 mkdir -p $__SCRIPT_DIR
 
-which curl 1>&2 >/dev/null
-if [ $? -ne 0 ];then
-  sudo apt update && sudo apt install curl -y
-fi
+# need pkg installing
+__missing_pkgs_repos=()
+__check_need_programs () {
+  for i in 'bc' 'curl' 'git'
+  do
+  which $i >/dev/null 2>&1
+  if [ $? -ne 0 ];then
+    __missing_pkgs_repos=("${__missing_pkgs_repos[@]}" $i)
+  fi
+  done
+  if [ -n "${__missing_pkgs_repos}" ];then
+    while :
+    do
+    echo " *** dhprompt notice *** "
+    echo -n " missing some packages for using dhprompt: "
+    echo "${__missing_pkgs_repos[@]}"
+    echo -n " do you install it from repositroy? [Y/n]: "
+    read __answer
+    case $__answer in
+      '' | [Yy]* )
+        sudo apt update && sudo apt -y install "${__missing_pkgs_repos[@]}"
+        break;
+        ;;
+      [Nn]* )
+        echo " maybe some function doesn't run correctly."
+        break;
+        ;;
+      * )
+        ;;
+    esac
+    done
+  fi
+}
 
-source $__SCRIPT_DIR/git-completion.bash
+__check_need_programs
+
+source $__SCRIPT_DIR/git-completion.bash >/dev/null 2>&1
 if [ $? -ne 0 ];then
-  curl -o $__SCRIPT_DIR/git-completion.bash https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
+    if [ $(which curl) ];then
+  echo -n "installing git-completion..."
+  curl -s -o $__SCRIPT_DIR/git-completion.bash https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
   source $__SCRIPT_DIR/git-completion.bash
+  echo "done"
+  fi
 fi
 
-source $__SCRIPT_DIR/git-prompt.sh
+source $__SCRIPT_DIR/git-prompt.sh >/dev/null 2>&1
 if [ $? -ne 0 ];then
-  curl -o  $__SCRIPT_DIR/git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
+    if [ $(which curl) ];then
+  echo -n "installing git-prompt..."
+  curl -s -o  $__SCRIPT_DIR/git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
   source $__SCRIPT_DIR/git-prompt.sh
+  echo "done"
+  fi
 fi
 
 grep "dh.sh" $HOME/.bashrc > /dev/null
@@ -107,11 +146,6 @@ if [ "$INSERTED_LINE" != "$SHOULD_LINE" ]; then
     sed -i "${i}d" $HOME/.bashrc
   done
   echo "$__FILEPATH" >> $HOME/.bashrc
-fi
-
-which bc 1>&2 >/dev/null
-if [ $? -ne 0 ];then
-  sudo apt update && sudo apt install bc -y
 fi
 
 
