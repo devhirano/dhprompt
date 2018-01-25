@@ -201,8 +201,8 @@ __LOG_FILE_DATE_FORMAT_PREFIX="%Y%m%d"
 __LOG_FILE_DATE_FORMAT_SUFFIX="%H%M%S"
 __LOG_NAME_PREFIX="$(date +${__LOG_FILE_DATE_FORMAT_PREFIX})"
 __LOG_NAME_SUFFIX="$(date +${__LOG_FILE_DATE_FORMAT_SUFFIX})"
-__LOG_FILE_COMMAND="${__LOG_DIR}/${__LOG_NAME_PREFIX}-${__LOG_NAME_SUFFIX}-$$-command.log"
-__LOG_FILE_STD="${__LOG_DIR}/${__LOG_NAME_PREFIX}-${__LOG_NAME_SUFFIX}-$$-std.log"
+__LOG_FILE_COMMAND="${__LOG_DIR}/${__LOG_NAME_PREFIX}/${__LOG_NAME_SUFFIX}-$$-command.log"
+__LOG_FILE_STD="${__LOG_DIR}/${__LOG_NAME_PREFIX}/${__LOG_NAME_SUFFIX}-$$-std.log"
 [ -d "${__LOG_DIR}" ] || mkdir -p ${__LOG_DIR}
 
 # Output out
@@ -247,6 +247,7 @@ dhprompt () {
 
     # Logging Command
     if [ -n "${__AUTO_LOGGING}" ];then
+      mkdir -p "${__LOG_DIR}/${__LOG_NAME_PREFIX}"
       echo ${previous_command} >> ${__LOG_FILE_COMMAND}
     fi
 
@@ -397,6 +398,7 @@ if [ -n "${__AUTO_LOGGING}" -o -n "${LOGGING_ONESHOT}" ];then
       echo " - logging is wrapped in typescript session, so need exit twice"
       echo
     fi
+    mkdir -p "${__LOG_DIR}/${__LOG_NAME_PREFIX}"
     script -f -a ${__LOG_FILE_STD}
   fi
 fi
@@ -404,6 +406,33 @@ fi
 enable_terminal_logging () {
     LOGGING_ONESHOT="true"
 }
+
+__compress_log () {
+  __LOG_NAME_PREFIX="$(date +${__LOG_FILE_DATE_FORMAT_PREFIX})"
+  for i in $(ls ${__LOG_DIR} |grep -v ${__LOG_NAME_PREFIX}| grep -v tgz 2>/dev/null)
+  do
+    if [ -d ${__LOG_DIR}/${i} ];then
+      for fc in $(ls ${__LOG_DIR}/${i}/*-command.log 2>/dev/null)
+      do
+        echo "=== ${fc} ===" >> ${__LOG_DIR}/${i}/command.log
+        cat ${fc} >> ${__LOG_DIR}/${i}/command.log
+        rm ${fc}
+      done
+
+      for fs in $(ls ${__LOG_DIR}/${i}/*-std.log 2>/dev/null)
+      do
+        echo "=== ${fs} ===" >> ${__LOG_DIR}/${i}/stdout.log
+        cat ${fs} >> ${__LOG_DIR}/${i}/stdout.log
+        rm ${fs}
+      done
+
+      tar zcvf ${__LOG_DIR}/${i}.tgz -C ${__LOG_DIR} ./${i}
+      rm -rf ${__LOG_DIR}/${i}
+    fi
+  done
+} >/dev/null 2>&1
+__compress_log
+
 
 PROMPT_COMMAND=dhprompt
 trap '{ stash_xtrace; previous_command=$this_command; this_command=$BASH_COMMAND; } > ${__OUTPUT_TARGET} 2>&1' DEBUG > /dev/null 2>&1
