@@ -54,7 +54,6 @@ __SHOW_PROXY="true"
 __INSTALLED_SCREEN=`which screen`
 __SHOW_SCREEN_SESSIONS="true"
 __SCREEN_SESSIONS_WC="0"
-
 __CACHE_GITHOME="true"
 
 # Directory color "BLUE/34" is hard to see so will be change it"
@@ -220,6 +219,73 @@ stash_xtrace () {
 }
 
 dhprompt () {
+  OPTIND=1
+  usage="
+dhprompt [-h] [-e]
+  -e  show dhprompt environment
+  -h  show this help text
+  "
+
+  while getopts 'he' option; do
+    case "$option" in
+      h) echo "$usage"
+         ;;
+      e) __help_show_env
+         ;;
+      *) printf "missing argument for -%s\n" "$OPTARG" >&2
+         echo "$usage" >&2
+         ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+}
+
+__help_show_env() {
+ cat << EOT 
+# dhprompt environments
+ -- prompt
+  > notification
+    banner: $__DHPROMPT_BANNER
+
+  > hostname / username
+    short hostname        : $__SHORTHOST
+    short hostname length : $__SHORTHOST_CHAR
+    short username        : $__SHORTUSER
+    short username length : $__SHORTUSER_CHAR
+
+  > simple
+    simple prompt : $__SIMPLE
+
+  > git enchanement
+    fetch check  : $__FETCH_CHECK
+    fetch branch : $__FETCH_BRANCH
+
+  > return code kaomoji
+    kamoji show        : $__GOOD_KAOMOJI_SHOW
+    good kaomoji       : $__GOOD_KAOMOJI
+    bad kaomoji random : $__BAD_KAOMOJI_RANDOM
+    bad kaomoji list   : $__BAD_KAOMOJI
+
+  > network
+    check network        : $__CHECK_NW
+    short network name   : $__SHORTNW
+    short network length : $__SHORTNW_CHAR
+
+  > date
+    date enabled : $__DATE
+    date format  : $__DATE_FMT
+    show proxy   : $__SHOW_PROXY
+
+  > screen
+    show screen session: $__SHOW_SCREEN_SESSIONS
+
+  > etc
+    cache githome: $__CACHE_GITHOME
+EOT
+
+}
+
+__dhprompt () {
     {
     EXITSTATUS="$?" >/dev/null 2>&1
 
@@ -232,7 +298,7 @@ dhprompt () {
         __NOW=""
     fi
 
-    if [ "${previous_command}" = "dhprompt" ]; then
+    if [ "${previous_command}" = "__dhprompt" ]; then
         PS1="${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
         case "${CURRENT_XTRACE}" in
             *x* )
@@ -366,7 +432,7 @@ dhprompt () {
 	# PS1=${WORKING_DIRECTORY}${PS1}
 
     PS2="${BOLD}>${OFF} "
-    if [ "${previous_command}" != "dhprompt" ]; then
+    if [ "${previous_command}" != "__dhprompt" ]; then
         echo
         echo "(command: ${previous_command})"
     else
@@ -434,6 +500,6 @@ __compress_log () {
 __compress_log
 
 
-PROMPT_COMMAND=dhprompt
+PROMPT_COMMAND=__dhprompt
 trap '{ stash_xtrace; previous_command=$this_command; this_command=$BASH_COMMAND; } > ${__OUTPUT_TARGET} 2>&1' DEBUG > /dev/null 2>&1
 
