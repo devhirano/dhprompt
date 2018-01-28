@@ -221,16 +221,20 @@ stash_xtrace () {
 dhprompt () {
   OPTIND=1
   usage="
-dhprompt [-h] [-e]
+dhprompt [-h] [-e] [-l]
   -e  show dhprompt environment
   -h  show this help text
+  -l  show log directory
   "
 
-  while getopts 'he' option; do
+  while getopts 'lhe' option; do
     case "$option" in
       h) echo "$usage"
          ;;
       e) __help_show_env
+         ;;
+      l) echo "log directory: $__LOG_DIR"
+         ls -la  ${__LOG_DIR}
          ;;
       *) printf "missing argument for -%s\n" "$OPTARG" >&2
          echo "$usage" >&2
@@ -243,44 +247,43 @@ dhprompt [-h] [-e]
 __help_show_env() {
  cat << EOT 
 # dhprompt environments
- -- prompt
-  > notification
-    banner: $__DHPROMPT_BANNER
+[notification]
+banner: $__DHPROMPT_BANNER
 
-  > hostname / username
-    short hostname        : $__SHORTHOST
-    short hostname length : $__SHORTHOST_CHAR
-    short username        : $__SHORTUSER
-    short username length : $__SHORTUSER_CHAR
+[hostname / username]
+short hostname        : $__SHORTHOST
+short hostname length : $__SHORTHOST_CHAR
+short username        : $__SHORTUSER
+short username length : $__SHORTUSER_CHAR
 
-  > simple
-    simple prompt : $__SIMPLE
+[simple]
+simple prompt : $__SIMPLE
 
-  > git enchanement
-    fetch check  : $__FETCH_CHECK
-    fetch branch : $__FETCH_BRANCH
+[git enchanement]
+fetch check  : $__FETCH_CHECK
+fetch branch : $__FETCH_BRANCH
 
-  > return code kaomoji
-    kamoji show        : $__GOOD_KAOMOJI_SHOW
-    good kaomoji       : $__GOOD_KAOMOJI
-    bad kaomoji random : $__BAD_KAOMOJI_RANDOM
-    bad kaomoji list   : $__BAD_KAOMOJI
+[return code kaomoji]
+kamoji show        : $__GOOD_KAOMOJI_SHOW
+good kaomoji       : $__GOOD_KAOMOJI
+bad kaomoji random : $__BAD_KAOMOJI_RANDOM
+bad kaomoji list   : $__BAD_KAOMOJI
 
-  > network
-    check network        : $__CHECK_NW
-    short network name   : $__SHORTNW
-    short network length : $__SHORTNW_CHAR
+[network]
+check network        : $__CHECK_NW
+short network name   : $__SHORTNW
+short network length : $__SHORTNW_CHAR
 
-  > date
-    date enabled : $__DATE
-    date format  : $__DATE_FMT
-    show proxy   : $__SHOW_PROXY
+[date]
+date enabled : $__DATE
+date format  : $__DATE_FMT
+show proxy   : $__SHOW_PROXY
 
-  > screen
-    show screen session: $__SHOW_SCREEN_SESSIONS
+[screen]
+show screen session: $__SHOW_SCREEN_SESSIONS
 
-  > etc
-    cache githome: $__CACHE_GITHOME
+[etc]
+cache githome: $__CACHE_GITHOME
 EOT
 
 }
@@ -383,6 +386,12 @@ __dhprompt () {
                 echo "!dhprompt: doesn't have ${__FETCH_BRANCH} branch"
               fi
             fi
+        fi
+
+        # check git managed user
+        __gituser=$(ls -ld .git/index | awk '{print $3}') >/dev/null 2>&1
+        if [ "$__gituser" != "$USER" ];then
+            echo "dhprompt (w): git index has '$__gituser' persmission "
         fi
     fi
 
