@@ -4,6 +4,7 @@
 
 __DHPROMPT_BANNER="true"
 
+__AUTO_SIZING="true"
 __SHORTHOST="true"
 __SHORTHOST_CHAR="8"
 __SHORTUSER="true"
@@ -189,6 +190,47 @@ stash_xtrace () {
     } > ${__OUTPUT_TARGET} 2>&1
 }
 
+auto_resize () {
+  set -x
+  __RESERVE_CHAR=20
+  __CURRENT_DIR_SIZE=$(basename $(pwd) | wc -m)
+  __HOSTNAME_SIZE=$(hostname | wc -m)
+  __USERNAME_SIZE=$(whoami | wc -m)
+  __NWNAME_SIZE=`ip route get 8.8.8.8 2>/dev/null | head -n 1 | sed -e "s/.*dev //" | sed -e "s/ *src .*//" | wc -m`
+  if [ $(($COLUMNS - $__RESERVE_CHAR - $__CURRENT_DIR_SIZE - $__HOSTNAME_SIZE - $__USERNAME_SIZE - $__NWNAME_SIZE)) -le 0 ];then
+      __SHORTUSER="true"
+      __SHORTHOST="true"
+      __SHOTNW="true"
+  else
+      __SHORTUSER="false"
+      __SHORTHOST="false"
+      __SHOTNW="false"
+  fi
+  set +x
+}
+
+set_hostname () {
+__SHORTHOSTNAME=`hostname`
+if [ "$__SHORTHOST" == "true" ];then
+  __HOSTLEN=`hostname | wc -c | xargs -I{} expr {} - 1`
+  # __HOSTLEN=`hostname | wc -c`
+  if [ $__HOSTLEN -gt ${__SHORTHOST_CHAR} ];then
+    __SHORTHOSTNAME=`hostname | cut -b -${__SHORTHOST_CHAR}`~
+  fi
+fi
+}
+
+set_username () {
+__SHORTUSERNAME=`whoami`
+if [ "$__SHORTUSER" == "true" ];then
+  __USERLEN=`whoami | wc -c | xargs -I{} expr {} - 1`
+  # __USERLEN=`whoami | wc -c`
+  if [ $__USERLEN -gt ${__SHORTUSER_CHAR} ];then
+    __SHORTUSERNAME=`whoami | cut -b -${__SHORTUSER_CHAR}`~
+  fi
+fi
+}
+
 dhprompt () {
   OPTIND=1
   usage="
@@ -285,26 +327,11 @@ __dhprompt () {
         return 0
     fi
 
-    # Logging Command
-    if [ -n "${__AUTO_LOGGING}" ];then
-      mkdir -p "${__LOG_DIR}/${__LOG_NAME_PREFIX}"
-      echo ${previous_command} >> ${__LOG_FILE_COMMAND}
+    if [ "${__AUTO_SIZING}" = "true" ]; then
+        auto_resize
     fi
-
-    if [ "$__SIMPLE" == "true" ];then
-      PS1="\W ${__ISROOT} "
-      PS2="${BOLD}>${OFF} "
-      return
-    fi
-
-    BOLD="\[\033[1m\]"
-    RED="\[\033[1;31m\]"
-    GREEN="\[\e[32;1m\]"
-    BLUE="\[\e[34;1m\]"
-    YELLOW="\[\e[33;1m\]"
-    CYAN="\[\e[36;1m\]"
-    VIOLET="\[\e[35;1m\]"
-    OFF="\[\033[m\]"
+    set_username
+    set_hostname
 
     if [ "$__CACHE_GITHOME" == "true" ];then
       ls .git 1>/dev/null 2>/dev/null
