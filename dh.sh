@@ -1,35 +1,6 @@
 #!/bin/bash
-# created by devhirano :)
-
-# what is this
-#  check exit status with kao-moji
-#  check enabled/disabled proxy
-#  git fetch automatically
-#  cut hostname if too long it
-#  simple mode, this is useful for copy/paste
-
-# how to use
-#  $ source dh.sh
-#  restart terminal
-#  done!
-
-#   change mode
-#    $ export __SIMPLE="true"
-#
-#      [devhirano@devhirano-HP~] ~ $ export __SIMPLE=true
-#      ~ $
-#
-#    $ export __SIMPLE="false"
-#      ~ $ export __SIMPLE=false
-#      [devhirano@devhirano-HP~] ~ $
-
-# many thanks
-#  git-completion and git-prompt contributors
-
-# strict
-#  this can use for only bash
-
-# configuration for dhprompt
+# created by devhirano
+# https://github.com/devhirano/dhprompt
 
 __DHPROMPT_BANNER="true"
 
