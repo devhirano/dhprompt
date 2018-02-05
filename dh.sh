@@ -234,13 +234,14 @@ fi
 dhprompt () {
   OPTIND=1
   usage="
-dhprompt [-h] [-e] [-l]
+dhprompt [-h] [-e] [-l] [-s]
   -e  show dhprompt environment
   -h  show this help text
   -l  show log directory
+  -s  switch simple/full
   "
 
-  while getopts 'lhe' option; do
+  while getopts 'lhes' option; do
     case "$option" in
       h) echo "$usage"
          ;;
@@ -248,6 +249,13 @@ dhprompt [-h] [-e] [-l]
          ;;
       l) echo "log directory: $__LOG_DIR"
          ls -la  ${__LOG_DIR}
+         ;;
+      s) if [ "$__SIMPLE" = "true" ]; then
+            __SIMPLE="false"
+         else
+            __SIMPLE="true"
+         fi
+         echo "set simple: $__SIMPLE"
          ;;
       *) printf "missing argument for -%s\n" "$OPTARG" >&2
          echo "$usage" >&2
@@ -301,12 +309,33 @@ EOT
 
 }
 
+BOLD="\[\033[1m\]"
+RED="\[\033[1;31m\]"
+GREEN="\[\e[32;1m\]"
+BLUE="\[\e[34;1m\]"
+YELLOW="\[\e[33;1m\]"
+CYAN="\[\e[36;1m\]"
+VIOLET="\[\e[35;1m\]"
+OFF="\[\033[m\]"
+
 __dhprompt () {
     {
     EXITSTATUS="$?" >/dev/null 2>&1
 
     stash_xtrace
     set +x
+
+    # Logging Command
+    if [ -n "${__AUTO_LOGGING}" ];then
+      mkdir -p "${__LOG_DIR}/${__LOG_NAME_PREFIX}"
+      echo ${previous_command} >> ${__LOG_FILE_COMMAND}
+    fi
+
+    if [ "$__SIMPLE" == "true" ];then
+      PS1="\W ${__ISROOT} "
+      PS2="${BOLD}>${OFF} "
+      return
+    fi
 
     if [ "$__DATE" == "true" ];then
         __NOW=`date +"${__DATE_FMT}"`" "
@@ -358,7 +387,6 @@ __dhprompt () {
         __SHORTNWNAME=`echo ${__SHORTNWNAME} | cut -b -${__SHORTNW_CHAR}`~
       fi
     fi
-    # CHECKPUBLICROUTE_DEV=`ip route get 8.8.8.8 2>/dev/null | head -n 1 | sed -e "s/.*dev //" | sed -e "s/ *src .*//"`
     PROMPT="[${RANDCOLOR}${__SHORTUSERNAME}${OFF}@${RANDCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}\W${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
