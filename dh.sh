@@ -496,11 +496,10 @@ if [ -n "${__AUTO_LOGGING}" -o -n "${LOGGING_ONESHOT}" ];then
     if [ -n "${__DHPROMPT_BANNER}" ];then
       echo " *** dhprompt notice ***"
       echo " - don't 'tail -f LOGFILE', write and read are never end"
-      echo " - logging is wrapped in typescript session, so need exit twice"
       echo
     fi
     mkdir -p "${__LOG_DIR}/${__LOG_NAME_PREFIX}"
-    script -f -a ${__LOG_FILE_STD}
+    script -f -a ${__LOG_FILE_STD} && exit
   fi
 fi
 
