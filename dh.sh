@@ -522,7 +522,8 @@ __compress_log () {
       for fs in $(ls ${__LOG_DIR}/${i}/*-std.log 2>/dev/null)
       do
         echo "=== ${fs} ===" >> ${__LOG_DIR}/${i}/stdout.log
-        cat ${fs} >> ${__LOG_DIR}/${i}/stdout.log
+        # trim ansi and VT100 control characters
+        cat ${fs} | sed -s 's/\x1b\[[0-9;]*[a-zA-Z]//g' | sed -s 's/\x1b\[\[[0-9;]*[a-zA-Z]//g'| sed -s 's/\x1b\[?[0-9]*h//g' | sed -s 's/\x1b\[?[0-9]*l//g' | sed -s 's/\x1b[\=|\>]//g' | sed -s 's/\x1b\[?[0-9]*//g' | sed -s 's/\x0d//g' | sed -s 's/\x1bM//g' | sed -s 's/\x1b[0-9]*//g' | sed -s 's/\x07//' >> ${__LOG_DIR}/${i}/stdout.log
         rm ${fs}
       done
 
