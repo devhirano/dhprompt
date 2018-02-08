@@ -3,7 +3,6 @@
 # https://github.com/devhirano/dhprompt
 
 __DHPROMPT_BANNER="true"
-
 __AUTO_SIZING="true"
 __SHORTHOST="true"
 __SHORTHOST_CHAR="8"
@@ -238,22 +237,28 @@ fi
 dhprompt () {
   OPTIND=1
   usage="
-dhprompt [-h] [-e] [-l] [-s]
+dhprompt [-h] [-e] [-l] [-L <filename>] [-s]
   -e  show dhprompt environment
   -h  show this help text
   -l  show log directory
+  -L  view log files using "less -N -R"
   -s  switch simple/full
   "
 
-  while getopts 'lhes' option; do
+  while getopts 'lhesL:' option; do
     case "$option" in
       h) echo "$usage"
          ;;
       e) __help_show_env
          ;;
-      l) echo "log directory: $__LOG_DIR"
-         ls -la  ${__LOG_DIR}
+      l) find ${__LOG_DIR}/. | sort | sed -e "s#${__LOG_DIR}/./##g"
          ;;
+      L) if [[ $OPTARG = *".tgz" ]]; then
+           tar -O -zxf ${__LOG_DIR}/${OPTARG} | less -N -R
+         else
+           less -N -R ${__LOG_DIR}/${OPTARG}
+        fi
+        ;;
       s) if [ "$__SIMPLE" = "true" ]; then
             __SIMPLE="false"
          else
