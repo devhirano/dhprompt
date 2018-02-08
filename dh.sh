@@ -20,12 +20,16 @@ __CHECK_NW="true"
 __SHORTNW="true"
 __SHORTNW_CHAR="4"
 __DATE="true"
-__DATE_FMT="%H:%M"
 __SHOW_PROXY="true"
 __INSTALLED_SCREEN=`which screen`
 __SHOW_SCREEN_SESSIONS="true"
 __SCREEN_SESSIONS_WC="0"
 __CACHE_GITHOME="true"
+
+# format
+DIRPATH="\w"
+__DATE_FMT="%H:%M"
+
 
 # Directory color "BLUE/34" is hard to see so will be change it"
 __LS_COLORS_DIR="1;33"
@@ -38,6 +42,7 @@ __ARRAY_RAND=`expr $RANDOM % ${__ARRAY_SIZE}`
 
 # dir
 __SCRIPT_DIR="$HOME/.dhprompt"
+
 
 [ -n $__LS_COLORS_DIR ] && export LS_COLORS="$LS_COLORS:di=$__LS_COLORS_DIR"
 
@@ -386,7 +391,7 @@ __dhprompt () {
         __SHORTNWNAME=`echo ${__SHORTNWNAME} | cut -b -${__SHORTNW_CHAR}`~
       fi
     fi
-    PROMPT="[${RANDCOLOR}${__SHORTUSERNAME}${OFF}@${RANDCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}\W${OFF}"
+    PROMPT="[${RANDCOLOR}${__SHORTUSERNAME}${OFF}@${RANDCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}${DIRPATH}${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
     if [ -a "./.git" -a "$__FETCH_CHECK" == "true" -a $__GIT_REMOTE_AMOUNT -ge 1 -a -e ".git/HEAD" ];then
@@ -459,9 +464,6 @@ __dhprompt () {
       # PS1="${PROMPT}${PROXYVAR}${BOLD}${RED}:(${OFF}$(__git_ps1) ${__ISROOT} "
       PS1="${PROMPT}${PROXYVAR}${__PYENV_MESSAGE}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} \n${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
     fi
-
-	# WORKING_DIRECTORY='\[\e[$[COLUMNS-$(echo -n " (\w)" | wc -c)]C\e[1;35m(\w)\e[0m\e[$[COLUMNS]D\]'
-	# PS1=${WORKING_DIRECTORY}${PS1}
 
     PS2="${BOLD}>${OFF} "
     if [ "${previous_command}" != "__dhprompt" ]; then
