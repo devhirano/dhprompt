@@ -234,6 +234,15 @@ if [ "$__SHORTUSER" == "true" ];then
 fi
 }
 
+timer_start () {
+  timer=${timer:-$SECONDS}
+}
+
+timer_stop () {
+  timer_show=$(($SECONDS - $timer))
+  unset timer
+}
+
 dhprompt () {
   OPTIND=1
   usage="
@@ -396,7 +405,9 @@ __dhprompt () {
         __SHORTNWNAME=`echo ${__SHORTNWNAME} | cut -b -${__SHORTNW_CHAR}`~
       fi
     fi
-    PROMPT="$$ [${RANDCOLOR}${__SHORTUSERNAME}${OFF}@${RANDCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}${DIRPATH}${OFF}"
+    # PROMPT="\n[last: ${timer_show}s]\n"
+    PROMPT="\n(${previous_command}(${EXITSTATUS}))\n"
+    PROMPT="${PROMPT}$$ [${RANDCOLOR}${__SHORTUSERNAME}${OFF}@${RANDCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}${DIRPATH}${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
     if [ -a "./.git" -a "$__FETCH_CHECK" == "true" -a $__GIT_REMOTE_AMOUNT -ge 1 -a -e ".git/HEAD" ];then
@@ -537,6 +548,8 @@ __compress_log () {
 __compress_log
 
 
-PROMPT_COMMAND=__dhprompt
+PROMPT_COMMAND="__dhprompt"
+# PROMPT_COMMAND="timer_stop; __dhprompt"
+
 trap '{ stash_xtrace; previous_command=$this_command; this_command=$BASH_COMMAND; } > ${__OUTPUT_TARGET} 2>&1' DEBUG > /dev/null 2>&1
 
