@@ -445,11 +445,9 @@ __dhprompt () {
       # PS1="${PROMPT} ${BOLD}${GREEN}:)${OFF}$(__git_ps1)]\$ "
 
       if [ "$__GOOD_KAOMOJI_SHOW" == "true" ];then
-        # PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} "
-        PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} \n${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
+        PS1="${PROMPT}${PROXYVAR}${__PYENV_MESSAGE} ${BOLD}${GREEN}${__GOOD_KAOMOJI[0]}${OFF}$(__git_ps1) ${__ISROOT} \n${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
       else
-        # PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE}${OFF}$(__git_ps1) ${__ISROOT} "
-        PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE}${OFF}$(__git_ps1) ${__ISROOT} \n${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
+        PS1="${PROMPT}${PROXYVAR}${__PYENV_MESSAGE}${OFF}$(__git_ps1) ${__ISROOT} \n${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
       fi
     else
       if [ "$__BAD_KAOMOJI_RANDOM" == "true" ];then
@@ -460,7 +458,7 @@ __dhprompt () {
       fi
 
       # PS1="${PROMPT}${PROXYVAR}${BOLD}${RED}:(${OFF}$(__git_ps1) ${__ISROOT} "
-      PS1="${__NOW}${PROMPT}${PROXYVAR}${__PYENV_MESSAGE}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} \n${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
+      PS1="${PROMPT}${PROXYVAR}${__PYENV_MESSAGE}${BOLD}${RED} ${__BAD_KAOMOJI_SHOW}${OFF}$(__git_ps1) ${__ISROOT} \n${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
     fi
 
 	# WORKING_DIRECTORY='\[\e[$[COLUMNS-$(echo -n " (\w)" | wc -c)]C\e[1;35m(\w)\e[0m\e[$[COLUMNS]D\]'
@@ -473,7 +471,6 @@ __dhprompt () {
     else
         PS1="${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
     fi
-    # PS1="${__NOW}${YELLOW}\W${OFF} ${__ISROOT} "
 
 
     case "${CURRENT_XTRACE}" in
