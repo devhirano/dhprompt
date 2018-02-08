@@ -396,7 +396,7 @@ __dhprompt () {
         __SHORTNWNAME=`echo ${__SHORTNWNAME} | cut -b -${__SHORTNW_CHAR}`~
       fi
     fi
-    PROMPT="[${RANDCOLOR}${__SHORTUSERNAME}${OFF}@${RANDCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}${DIRPATH}${OFF}"
+    PROMPT="$$ [${RANDCOLOR}${__SHORTUSERNAME}${OFF}@${RANDCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}${DIRPATH}${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
     if [ -a "./.git" -a "$__FETCH_CHECK" == "true" -a $__GIT_REMOTE_AMOUNT -ge 1 -a -e ".git/HEAD" ];then
@@ -460,7 +460,6 @@ __dhprompt () {
       fi
     else
       if [ "$__BAD_KAOMOJI_RANDOM" == "true" ];then
-        # __ARRAY_RAND=`expr $RANDOM % ${__ARRAY_SIZE}`
         __BAD_KAOMOJI_SHOW=${__BAD_KAOMOJI[${__ARRAY_RAND}]}
       else
         __BAD_KAOMOJI_SHOW=${__BAD_KAOMOJI[0]}
