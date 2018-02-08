@@ -21,7 +21,6 @@ __SHORTNW="true"
 __SHORTNW_CHAR="4"
 __DATE="true"
 __DATE_FMT="%H:%M"
-# __DATE_FMT="%H:%M:%S"
 __SHOW_PROXY="true"
 __INSTALLED_SCREEN=`which screen`
 __SHOW_SCREEN_SESSIONS="true"
