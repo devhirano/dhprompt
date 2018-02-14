@@ -250,7 +250,7 @@ dhprompt [-h] [-e] [-l] [-L <filename>] [-s]
   -e  show dhprompt environment
   -h  show this help text
   -l  show log directory
-  -L  view log files using "less -N -R"
+  -L  view log files using 'less -N -R'
   -s  switch simple/full
   "
 
@@ -260,7 +260,10 @@ dhprompt [-h] [-e] [-l] [-L <filename>] [-s]
          ;;
       e) __help_show_env
          ;;
-      l) find ${__LOG_DIR}/. | sort | sed -e "s#${__LOG_DIR}/./##g"
+      l) echo "-------------------------------------"
+         du -h ${__LOG_DIR}
+         echo "-------------------------------------"
+         find ${__LOG_DIR}/. | sort | sed -e "s#${__LOG_DIR}/./##g"
          ;;
       L) if [[ $OPTARG = *".tgz" ]]; then
            tar -O -zxf ${__LOG_DIR}/${OPTARG} | less -N -R
@@ -282,6 +285,34 @@ dhprompt [-h] [-e] [-l] [-L <filename>] [-s]
   done
   shift $((OPTIND - 1))
 }
+
+# completion
+_dhprompt()
+{
+  local cur=${COMP_WORDS[COMP_CWORD]}
+  # echo
+  # echo "COMP_WORDS : $COMP_WORDS"
+  # echo "COMP_CWORD : $COMP_CWORD"
+  # echo "cur        : $cur"
+  case "$COMP_CWORD" in
+  1)
+    COMPREPLY=( $(compgen -W "-h -e -l -L -s" -- $cur) )
+    ;;
+  2)
+    if [ "${COMP_WORDS[1]}" = "-L" ]; then
+        COMPREPLY=( $(compgen -W "$(find ${__LOG_DIR}/. | sort | sed -e "s#${__LOG_DIR}/./##g")" -- $cur) )
+    else
+        COMPREPLY=( $(compgen -W "$(ls)" -- $cur) )
+    fi
+    ;;
+  *)
+    COMPREPLY=( $(compgen -W "$(ls)" -- $cur) )
+    ;;
+  esac
+}
+
+complete -F _dhprompt dhprompt
+
 
 __help_show_env() {
  cat << EOT 
