@@ -572,7 +572,11 @@ __compress_log () {
       done
 
       tar zcvf ${__LOG_DIR}/${i}.tgz -C ${__LOG_DIR} ./${i}
-      rm -rf ${__LOG_DIR}/${i}
+      # todo: check writing or not
+      #   when logfile is created at past days, directories are brutally removed
+      #   have to check and ignore tgz if writing files are exists
+      #   so don't remove at this time
+      # rm -rf ${__LOG_DIR}/${i}
     fi
   done
 } >/dev/null 2>&1
