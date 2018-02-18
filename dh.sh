@@ -571,12 +571,12 @@ __compress_log () {
         rm ${fs}
       done
 
-      tar zcvf ${__LOG_DIR}/${i}.tgz -C ${__LOG_DIR} ./${i}
-      # todo: check writing or not
-      #   when logfile is created at past days, directories are brutally removed
-      #   have to check and ignore tgz if writing files are exists
-      #   so don't remove at this time
-      # rm -rf ${__LOG_DIR}/${i}
+      # if process is exists, no tar no rm
+      ps -eo pid,comm,cmd |grep "[s]cript -f -a ${__LOG_DIR}/${i}/" >/dev/null 2>&1
+      if [ $? != 0 ];then
+        tar zcvf ${__LOG_DIR}/${i}.tgz -C ${__LOG_DIR} ./${i}
+        rm -rf ${__LOG_DIR}/${i}
+      fi
     fi
   done
 } >/dev/null 2>&1
