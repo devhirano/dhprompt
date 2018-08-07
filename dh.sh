@@ -580,7 +580,10 @@ __compress_log () {
     fi
   done
 } >/dev/null 2>&1
+
+echo -n "log compressing... "
 __compress_log
+echo "done"
 
 
 PROMPT_COMMAND="__dhprompt"
