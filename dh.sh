@@ -166,6 +166,7 @@ __PYENV_MESSAGE=""
 
 
 # Prepare Logging
+__TERM_I=1
 __AUTO_LOGGING="true"
 LOGGING_ONESHOT=""
 CURRENT_LOGGING=""
@@ -175,8 +176,13 @@ __LOG_FILE_DATE_FORMAT_PREFIX="%Y%m%d"
 __LOG_FILE_DATE_FORMAT_SUFFIX="%H%M%S"
 __LOG_NAME_PREFIX="$(date +${__LOG_FILE_DATE_FORMAT_PREFIX})"
 __LOG_NAME_SUFFIX="$(date +${__LOG_FILE_DATE_FORMAT_SUFFIX})"
-__LOG_FILE_COMMAND="${__LOG_DIR}/${__LOG_NAME_PREFIX}/${__LOG_NAME_SUFFIX}-$$-command.log"
-__LOG_FILE_STD="${__LOG_DIR}/${__LOG_NAME_PREFIX}/${__LOG_NAME_SUFFIX}-$$-std.log"
+
+until [ ! -f "${__LOG_DIR}/${__LOG_NAME_PREFIX}/${__TERM_I}-command.log" ]
+do
+  __TERM_I=$(( $__TERM_I + 1 ))
+done
+__LOG_FILE_COMMAND="${__LOG_DIR}/${__LOG_NAME_PREFIX}/${__TERM_I}-command.log"
+__LOG_FILE_STD="${__LOG_DIR}/${__LOG_NAME_PREFIX}/${__TERM_I}-std.log"
 [ -d "${__LOG_DIR}" ] || mkdir -p ${__LOG_DIR}
 
 # Output out
@@ -560,7 +566,7 @@ __compress_log () {
       do
         echo "=== ${fc} ===" >> ${__LOG_DIR}/${i}/command.log
         cat ${fc} >> ${__LOG_DIR}/${i}/command.log
-        rm ${fc}
+        rm -rf ${fc}
       done
 
       for fs in $(ls ${__LOG_DIR}/${i}/*-std.log 2>/dev/null)
@@ -568,7 +574,7 @@ __compress_log () {
         echo "=== ${fs} ===" >> ${__LOG_DIR}/${i}/stdout.log
         # trim ansi and VT100 control characters
         cat ${fs} | sed -s 's/\x1b\[[0-9;]*[a-zA-Z]//g' | sed -s 's/\x1b\[\[[0-9;]*[a-zA-Z]//g'| sed -s 's/\x1b\[?[0-9]*h//g' | sed -s 's/\x1b\[?[0-9]*l//g' | sed -s 's/\x1b[\=|\>]//g' | sed -s 's/\x1b\[?[0-9]*//g' | sed -s 's/\x0d//g' | sed -s 's/\x1bM//g' | sed -s 's/\x1b[0-9]*//g' | sed -s 's/\x07//' >> ${__LOG_DIR}/${i}/stdout.log
-        rm ${fs}
+        rm -rf ${fs}
       done
 
       # if process is exists, no tar no rm
