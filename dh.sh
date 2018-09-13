@@ -250,7 +250,7 @@ dhprompt [-h] [-e] [-l] [-L <filename>] [-s]
   -e  show dhprompt environment
   -h  show this help text
   -l  show log directory
-  -L  view log files using "less -N -R"
+  -L  view log files using 'less -N -R'
   -s  switch simple/full
   "
 
