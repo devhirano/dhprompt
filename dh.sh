@@ -554,6 +554,21 @@ PROMPT_COMMAND="__dhprompt"
 # PROMPT_COMMAND="echo -ne \033k\033\0134\033k;__dhprompt"
 # PROMPT_COMMAND="timer_stop; __dhprompt"
 
+function recursive_ppid {
+  pid=${1:-$$}
+  stat=($(</proc/${pid}/stat))
+  ppid=${stat[3]}
+
+  if [[ $(cat /proc/${ppid}/comm 2>/dev/null) == "screen" ]]; then
+      :
+  elif [[ ${ppid} -eq 0 ]]; then
+      screen
+  else
+      recursive_ppid ${ppid}
+  fi
+}
+recursive_ppid $$
+
 function screen_settitle() {
     if [ -n "$STY" ] ; then
         # We are in a screen session
