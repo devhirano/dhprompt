@@ -536,6 +536,8 @@ __dhprompt () {
     CURRENT_XTRACE=""
 
     } > ${__OUTPUT_TARGET} 2>&1
+
+    screen_settitle $(echo -n ${previous_command}| awk '{print $1}')
 }
 
 # ppid が script なら起動済み
@@ -593,7 +595,33 @@ echo "done"
 
 
 PROMPT_COMMAND="__dhprompt"
+# PROMPT_COMMAND="echo -ne \033k\033\0134\033k;__dhprompt"
 # PROMPT_COMMAND="timer_stop; __dhprompt"
+
+function recursive_ppid {
+  pid=${1:-$$}
+  stat=($(</proc/${pid}/stat))
+  ppid=${stat[3]}
+
+  if [[ $(cat /proc/${ppid}/comm 2>/dev/null) == "screen" ]]; then
+      :
+  elif [[ ${ppid} -eq 0 ]]; then
+      screen
+  else
+      recursive_ppid ${ppid}
+  fi
+}
+recursive_ppid $$
+
+function screen_settitle() {
+    if [ -n "$STY" ] ; then
+        # We are in a screen session
+        printf "\033k%s\033\\" "$@"
+        screen -X eval "at \\# title $@" "shelltitle $@"
+    else
+        printf "\033]0;%s\007" "$@"
+    fi
+}
 
 trap '{ stash_xtrace; previous_command=$this_command; this_command=$BASH_COMMAND; } > ${__OUTPUT_TARGET} 2>&1' DEBUG > /dev/null 2>&1
 
