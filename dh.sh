@@ -2,6 +2,42 @@
 # created by devhirano
 # https://github.com/devhirano/dhprompt
 
+__AUTO_SCREEN=1
+
+# enter screen first
+function recursive_ppid {
+  pid=${1:-$$}
+  stat=($(</proc/${pid}/stat))
+  ppid=${stat[3]}
+
+  if [[ $(cat /proc/${ppid}/comm 2>/dev/null) == "screen" ]]; then
+      :
+  elif [[ ${ppid} -eq 0 ]]; then
+      mkdir -p "$HOME/.screen"
+      chmod 700 $HOME/.screen
+      export SCREENDIR="$HOME/.screen"
+      screen
+  else
+      recursive_ppid ${ppid}
+  fi
+}
+
+[ -n "$__AUTO_SCREEN" ] && recursive_ppid $$
+
+function recursive_script {
+  pid=${1:-$$}
+  stat=($(</proc/${pid}/stat))
+  ppid=${stat[3]}
+
+  if [[ $(cat /proc/${ppid}/comm 2>/dev/null) == "script" ]]; then
+      echo 0
+  elif [[ ${ppid} -eq 0 ]]; then
+      echo 1
+  else
+      recursive_script ${ppid}
+  fi
+}
+
 __DHPROMPT_BANNER="true"
 __AUTO_SIZING="true"
 __SHORTHOST="true"
@@ -542,9 +578,8 @@ __dhprompt () {
 
 # ppid が script なら起動済み
 if [ -n "${__AUTO_LOGGING}" -o -n "${LOGGING_ONESHOT}" ];then
-  CURRENT_LOGGING=$(ps -o pid,args -e |grep "$(ps -p $(echo $$) -o ppid)" | grep -v grep | grep [s]cript)
-  if [ -z "$CURRENT_LOGGING" ];then
-
+  CURRENT_LOGGING=$(recursive_script $$)
+  if [ 0 != "$CURRENT_LOGGING" ];then
     if [ -n "${__DHPROMPT_BANNER}" ];then
       echo " *** dhprompt notice ***"
       echo " - don't 'tail -f LOGFILE', write and read are never end"
