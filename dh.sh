@@ -423,7 +423,7 @@ __dhprompt () {
     fi
 
     if [ "$__SIMPLE" == "true" ];then
-      PS1="\W ${__ISROOT} "
+      PS1="$(basename $(pwd)) ${__ISROOT} "
       PS2="${BOLD}>${OFF} "
       return
     fi
