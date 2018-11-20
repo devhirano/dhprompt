@@ -12,6 +12,11 @@ function recursive_ppid {
 
   if [[ $(cat /proc/${ppid}/comm 2>/dev/null) == "screen" ]]; then
       :
+  elif [[ $(ps auxww |grep gnome-session-binar[y] |wc -l) -le 0 ]]; then
+      # this is used for fedora x-window startup problem
+      :
+  elif [ -z ${DISPLAY} ]; then
+      :
   elif [[ ${ppid} -eq 0 ]]; then
       mkdir -p "$HOME/.screen"
       chmod 700 $HOME/.screen
@@ -143,14 +148,14 @@ grep "dh.sh" $HOME/.bashrc > /dev/null
 if [ $? -ne 0 ];then
   __FILEDIR=$(cd $(dirname ${BASH_SOURCE:-$0}); pwd)
   __FILEPATH=`readlink -f "$__FILEDIR/dh.sh"`
-  echo "source $__FILEPATH" >> $HOME/.bashrc
+  echo "[ -n \"$DISPLAY\" ] && pgrep gnome-terminal >/dev/null 2>&1 && source $__FILEPATH" >> $HOME/.bashrc
 fi
 
-INSERTED_LINE=$(grep -Ens '^source.*\/dh\.sh' $HOME/.bashrc | sed -e 's/:.*//g')
+INSERTED_LINE=$(grep -Ens 'source.*\/dh\.sh' $HOME/.bashrc | sed -e 's/:.*//g')
 SHOULD_LINE=$(wc -l $HOME/.bashrc  |sed -e 's/ .*//g')
 if [ "$INSERTED_LINE" != "$SHOULD_LINE" ]; then
   cp -fp ~/.bashrc ~/.bashrc.back
-  __FILEPATH=$(grep -Ens '^source.*\/dh\.sh' $HOME/.bashrc |head -n 1| sed -e 's/.*://g')
+  __FILEPATH=$(grep -Ens 'source.*\/dh\.sh' $HOME/.bashrc |head -n 1| sed -e 's/.*://g')
   for i in $(echo ${INSERTED_LINE} | sed -e 's/ /\n/g' |tac)
   do
     sed -i "${i}d" $HOME/.bashrc
@@ -632,21 +637,6 @@ echo "done"
 PROMPT_COMMAND="__dhprompt"
 # PROMPT_COMMAND="echo -ne \033k\033\0134\033k;__dhprompt"
 # PROMPT_COMMAND="timer_stop; __dhprompt"
-
-function recursive_ppid {
-  pid=${1:-$$}
-  stat=($(</proc/${pid}/stat))
-  ppid=${stat[3]}
-
-  if [[ $(cat /proc/${ppid}/comm 2>/dev/null) == "screen" ]]; then
-      :
-  elif [[ ${ppid} -eq 0 ]]; then
-      screen
-  else
-      recursive_ppid ${ppid}
-  fi
-}
-recursive_ppid $$
 
 function screen_settitle() {
     if [ -n "$STY" ] ; then
