@@ -1,0 +1,1 @@
+[ -n "$DISPLAY" ] && pgrep gnome-terminal >/dev/null 2>&1 && source
