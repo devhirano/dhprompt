@@ -24,6 +24,7 @@ __INSTALLED_SCREEN=`which screen`
 __SHOW_SCREEN_SESSIONS="true"
 __SCREEN_SESSIONS_WC="0"
 __CACHE_GITHOME="true"
+__RANDOM_USERCOLOR="false"
 
 # format
 DIRPATH="\w"
@@ -158,8 +159,11 @@ if [ "$__SHORTUSER" == "true" ];then
   fi
 fi
 
-RANDCOLOR=$(( $RANDOM * 6 / 32767 + 1 ))
-RANDCOLOR="\[\e[3${RANDCOLOR}m\]"
+USERCOLOR=""
+if [ "${__RANDOM_USERCOLOR}" = "true" ];then
+  USERCOLOR=$(( $RANDOM * 6 / 32767 + 1 ))
+  USERCOLOR="\[\e[3${USERCOLOR}m\]"
+fi
 
 __IS_PYENV=`which pyenv 2>/dev/null`
 __PYENV_MESSAGE=""
@@ -407,7 +411,7 @@ __dhprompt () {
     fi
     # PROMPT="\n[last: ${timer_show}s]\n"
     PROMPT="\n(${previous_command}(${EXITSTATUS}))\n"
-    PROMPT="${PROMPT}$$ [${RANDCOLOR}${__SHORTUSERNAME}${OFF}@${RANDCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}${DIRPATH}${OFF}"
+    PROMPT="${PROMPT}$$ [${USERCOLOR}${__SHORTUSERNAME}${OFF}@${USERCOLOR}${__SHORTHOSTNAME}${OFF}(${__SHORTNWNAME})] ${YELLOW}${DIRPATH}${OFF}"
 
     __GIT_REMOTE_AMOUNT=`git remote -v 2>/dev/null |wc -l`
     if [ -a "./.git" -a "$__FETCH_CHECK" == "true" -a $__GIT_REMOTE_AMOUNT -ge 1 -a -e ".git/HEAD" ];then
