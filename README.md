@@ -53,7 +53,7 @@ badcommand: command not found
 ```
 https://github.com/devhirano/dhprompt.git
 cd dhprompt
-source dh.sh
+./setup.sh
 ```
 
 And then you can see the enchaned console next login :)
