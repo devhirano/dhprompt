@@ -2,7 +2,7 @@
 # created by devhirano
 # https://github.com/devhirano/dhprompt
 
-__DHPROMPT_BANNER="true"
+__DHPROMPT_BANNER=""
 __AUTO_SIZING="true"
 __SHORTHOST="true"
 __SHORTHOST_CHAR="8"
